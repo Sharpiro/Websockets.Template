@@ -1,27 +1,43 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Net.Sockets;
 using System.Text;
 
 namespace Websockets.Tempalte.Core
 {
     public class SocketClient
     {
-        public readonly TcpClient _tcpClient;
+        private readonly TcpClient _tcpClient;
+        private NetworkStream _stream;
 
         public SocketClient()
         {
             _tcpClient = new TcpClient("127.0.0.1", 8095);
         }
 
+        public void OpenStream()
+        {
+            _stream = _tcpClient.GetStream();
+        }
+
+        public void CloseStream()
+        {
+            _stream.Close();
+        }
+
         public void SendMessage(string message)
         {
-            var messageBytes = Encoding.UTF8.GetBytes(message);
-            var stream = _tcpClient.GetStream();
-            stream.Write(messageBytes, 0, messageBytes.Length);
-            stream.Close();
+            var messageBytes = Encoding.UTF8.GetBytes($"{message}\r\n");
+            _stream = _tcpClient.GetStream();
+            _stream.Write(messageBytes, 0, messageBytes.Length);
+            var buffer = new byte[256];
+            _stream.Read(buffer, 0, buffer.Length);
+            var data = Encoding.UTF8.GetString(buffer).Trim('\0');
+            Console.WriteLine($"Response: {data}");
         }
 
         public void Close()
         {
+            _stream.Close();
             _tcpClient.Close();
         }
     }
