@@ -1,8 +1,8 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Websockets.Tempalte.Core
+namespace Websockets.Template.CoreX
 {
     public class SocketClient
     {
@@ -21,7 +21,7 @@ namespace Websockets.Tempalte.Core
 
         public void CloseStream()
         {
-            _stream.Close();
+            _stream.Dispose();
         }
 
         public void SendMessage(string message)
@@ -32,13 +32,12 @@ namespace Websockets.Tempalte.Core
             var buffer = new byte[256];
             _stream.Read(buffer, 0, buffer.Length);
             var data = Encoding.UTF8.GetString(buffer).Trim('\0');
-            Console.WriteLine($"Response: {data}");
+            Debug.WriteLine($"Response: {data}");
         }
 
         public void Close()
         {
-            _stream.Close();
-            _tcpClient.Close();
+            _stream.Dispose();
         }
     }
 }
