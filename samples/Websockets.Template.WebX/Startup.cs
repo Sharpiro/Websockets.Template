@@ -17,9 +17,8 @@ namespace Websockets.Template.WebX
             Console.WriteLine("lol");
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            var server = new SocketServer();
+            var server = new CardSocketServer();
             server.Start();
-            server.AcceptClientsAsync();
             //Task.Run(async () =>
             //{
             //    while (true)

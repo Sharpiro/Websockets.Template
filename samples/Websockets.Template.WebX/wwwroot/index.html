@@ -9,10 +9,15 @@
     <div class="container" style="padding-top:25px">
         <div class="row">
             <div class="col-md-4">
+                <select id="dataType" class="form-control">
+                    <option value="broadcast">broadcast</option>
+                    <option value="guid">guid</option>
+                    <option value="message">message</option>
+                </select>
                 <span>Input</span>
-                <input id="input" type="text" class="form-control" />
+                <input id="input" type="text" class="form-control"/>
                 <span>Output</span>
-                <input id="output" type="text" readonly class="form-control" />
+                <input id="output" type="text" readonly class="form-control"/>
                 <button id="button1" class="btn btn-default">Submit</button>
             </div>
         </div>

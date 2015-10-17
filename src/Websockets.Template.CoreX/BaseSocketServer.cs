@@ -5,41 +5,39 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Websockets.Template.CoreX.Models;
 
 namespace Websockets.Template.CoreX
 {
-    public class SocketServer
+    public abstract class BaseSocketServer
     {
-        private readonly IList<SocketWrapper> _connections;
-        private readonly ConcurrentDictionary<string, SocketWrapper> _dictionary;
-        private readonly TcpListener _tcpListener;
-        private int _numberOfConnections = 0;
+        protected Action<DataTransferModel> Handler { get; set; }
+        protected readonly IList<SocketWrapper> _connections;
+        protected readonly ConcurrentDictionary<string, SocketWrapper> _dictionary;
+        protected readonly TcpListener _tcpListener;
+        protected int _numberOfConnections;
 
-        public SocketServer()
+        protected BaseSocketServer()
         {
             _tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8095);
             _dictionary = new ConcurrentDictionary<string, SocketWrapper>();
             _connections = new List<SocketWrapper>();
         }
 
-        public void Start()
+        protected void Start()
         {
             _tcpListener.Start();
         }
 
-        public void Stop()
+        protected void Stop()
         {
             _tcpListener.Stop();
         }
 
 #pragma warning disable 4014
-        public async void AcceptClientsAsync()
+        protected async void AcceptClientsAsync()
         {
             await Task.Run(async () =>
             {
@@ -81,7 +79,7 @@ namespace Websockets.Template.CoreX
         }
 #pragma warning restore 4014
 
-        private void BroadcastMessage(string message)
+        protected void BroadcastMessage(string message)
         {
             foreach (var connection in _connections)
             {
@@ -94,6 +92,8 @@ namespace Websockets.Template.CoreX
             try
             {
                 var jsonObject = JsonConvert.DeserializeObject<DataTransferModel>(data);
+                jsonObject.ClientId = clientId;
+                Handler?.Invoke(jsonObject);
                 switch (jsonObject.DataType.ToLowerInvariant())
                 {
                     case "broadcast":
@@ -108,6 +108,17 @@ namespace Websockets.Template.CoreX
             catch (Exception ex)
             {
                 Debug.WriteLine("exception");
+            }
+        }
+
+        protected void SendMessage(string clientId, string title, string message)
+        {
+            foreach (var connection in _connections)
+            {
+                if (connection.ClientId == clientId)
+                {
+                    connection.SendEncoded("message", title, message);
+                }
             }
         }
 

@@ -1,12 +1,12 @@
-﻿///<reference path="./wrapper.ts"/>
-///<reference path="../lib/definitions/jquery/jquery.d.ts/"/>
+﻿///<reference path="../lib/definitions/jquery/jquery.d.ts/"/>
+///<reference path="./socketWrapper.ts"/>
 
-var wrapper = new Wrapper();
-wrapper.on("ABCD", () =>
+var socketWrapper = new SocketWrapper();
+socketWrapper.on("ABCD", () =>
 {
     console.log("ok");
 });
-wrapper.on("action1", () =>
+socketWrapper.on("action1", () =>
 {
     console.log(`on "clicked" event hit`);
 });
@@ -14,6 +14,7 @@ wrapper.on("action1", () =>
 
 $("#button1").click(() =>
 {
+    var dataType = $("#dataType").val();
     var inputText = $("#input").val();
-    wrapper.send("broadcast", "action1", inputText);
+    socketWrapper.send(dataType, "action1", inputText);
 });

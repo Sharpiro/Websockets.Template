@@ -10,5 +10,6 @@ namespace Websockets.Template.CoreX.Models
         public string DataTitle { get; set; }
         [JsonProperty("data")]
         public dynamic Data { get; set; }
+        public string ClientId { get; set; }
     }
 }

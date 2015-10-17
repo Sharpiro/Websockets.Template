@@ -1,4 +1,4 @@
-﻿class Wrapper
+﻿class SocketWrapper
 {
     private socket: WebSocket;
     private guid: string;

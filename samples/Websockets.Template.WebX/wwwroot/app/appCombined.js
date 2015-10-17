@@ -1,5 +1,5 @@
-var Wrapper = (function () {
-    function Wrapper() {
+var SocketWrapper = (function () {
+    function SocketWrapper() {
         var _this = this;
         this.registeredFuncs = {};
         this.socket = new WebSocket("ws://localhost:8095");
@@ -30,34 +30,35 @@ var Wrapper = (function () {
             console.log("connection closed...");
         };
     }
-    Wrapper.prototype.on = function (name, func) {
+    SocketWrapper.prototype.on = function (name, func) {
         name = name.toLowerCase();
         this.registeredFuncs[name] = func;
     };
-    Wrapper.prototype.send = function (dataType, dataTitle, data) {
+    SocketWrapper.prototype.send = function (dataType, dataTitle, data) {
         var dataObj = { dataType: dataType, dataTitle: dataTitle, data: data };
         var jsonString = JSON.stringify(dataObj);
         this.socket.send(jsonString);
     };
-    Wrapper.prototype.close = function () {
+    SocketWrapper.prototype.close = function () {
         this.socket.close();
     };
-    Wrapper.prototype.getGuid = function () {
+    SocketWrapper.prototype.getGuid = function () {
         return this.guid;
     };
-    return Wrapper;
+    return SocketWrapper;
 })();
-///<reference path="./wrapper.ts"/>
 ///<reference path="../lib/definitions/jquery/jquery.d.ts/"/>
-var wrapper = new Wrapper();
-wrapper.on("ABCD", function () {
+///<reference path="./socketWrapper.ts"/>
+var socketWrapper = new SocketWrapper();
+socketWrapper.on("ABCD", function () {
     console.log("ok");
 });
-wrapper.on("action1", function () {
+socketWrapper.on("action1", function () {
     console.log("on \"clicked\" event hit");
 });
 $("#button1").click(function () {
+    var dataType = $("#dataType").val();
     var inputText = $("#input").val();
-    wrapper.send("broadcast", "action1", inputText);
+    socketWrapper.send(dataType, "action1", inputText);
 });
 //# sourceMappingURL=appCombined.js.map
