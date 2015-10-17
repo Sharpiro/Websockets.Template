@@ -14,19 +14,10 @@ namespace Websockets.Template.WebX
 
         public void Configure(IApplicationBuilder app)
         {
-            Console.WriteLine("lol");
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            var server = new CardSocketServer();
-            server.Start();
-            //Task.Run(async () =>
-            //{
-            //    while (true)
-            //    {
-            //        await Task.Delay(TimeSpan.FromSeconds(8));
-            //        server.BroadcastMessage("nothing");
-            //    }
-            //});
+            var application = new CardApplication(new SocketServer());
+            application.Start();
         }
     }
 }

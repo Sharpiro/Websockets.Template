@@ -58,7 +58,8 @@ socketWrapper.on("action1", function () {
 });
 $("#button1").click(function () {
     var dataType = $("#dataType").val();
-    var inputText = $("#input").val();
-    socketWrapper.send(dataType, "action1", inputText);
+    var dataTitle = $("#dataTitle").val();
+    var dataValue = $("#dataValue").val();
+    socketWrapper.send(dataType, dataTitle, dataValue);
 });
 //# sourceMappingURL=appCombined.js.map

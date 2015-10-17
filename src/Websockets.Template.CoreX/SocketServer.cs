@@ -11,55 +11,61 @@ using Websockets.Template.CoreX.Models;
 
 namespace Websockets.Template.CoreX
 {
-    public abstract class BaseSocketServer
+    public class SocketServer : ISocketServer
     {
-        protected Action<DataTransferModel> Handler { get; set; }
+        public Action<DataTransferModel> UserMessageHandler { get; set; }
+        public int MaxConnections { get { return _maxConnections; } set { if (_numberOfConnections < 1) _maxConnections = value; } }
         protected readonly IList<SocketWrapper> _connections;
         protected readonly ConcurrentDictionary<string, SocketWrapper> _dictionary;
         protected readonly TcpListener _tcpListener;
         protected int _numberOfConnections;
+        private int _maxConnections = 5;
 
-        protected BaseSocketServer()
+        public SocketServer()
         {
             _tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8095);
             _dictionary = new ConcurrentDictionary<string, SocketWrapper>();
             _connections = new List<SocketWrapper>();
         }
 
-        protected void Start()
+        public void Start()
         {
             _tcpListener.Start();
+            AcceptClientsAsync();
         }
 
-        protected void Stop()
+        public void Stop()
         {
             _tcpListener.Stop();
         }
 
 #pragma warning disable 4014
-        protected async void AcceptClientsAsync()
+        private async void AcceptClientsAsync()
         {
             await Task.Run(async () =>
             {
                 while (true)
                 {
                     var socket = await _tcpListener.AcceptSocketAsync();
-                    if (_connections.Count == 2)
+                    if (_dictionary.Count == _maxConnections)
                     {
                         var oldestSocket = _connections.FirstOrDefault();
                         oldestSocket?.Destroy();
                         _connections.Remove(oldestSocket);
+                        SocketWrapper temp;
+                        _dictionary.TryRemove(oldestSocket.ClientId, out temp);
                         _numberOfConnections--;
-                        _connections[0].PlayerNumber = 1;
+                        _connections.First().SocketNumber = 1;
+                        _dictionary.FirstOrDefault().Value.SocketNumber = 1;
                     }
                     var socketWrapper = new SocketWrapper(socket)
                     {
                         Name = "123",
-                        PlayerNumber = _numberOfConnections + 1,
+                        SocketNumber = _numberOfConnections + 1,
                         ClientId = Guid.NewGuid().ToString(),
                     };
                     _numberOfConnections++;
-                    _dictionary.TryAdd("123", socketWrapper);
+                    _dictionary.TryAdd(socketWrapper.ClientId, socketWrapper);
                     _connections.Add(socketWrapper);
                     Task.Run(async () =>
                     {
@@ -68,7 +74,11 @@ namespace Websockets.Template.CoreX
                             var data = socketWrapper.Receive();
                             if (!string.IsNullOrEmpty(data))
                             {
-                                HandleMessage(data, socketWrapper.ClientId);
+                                var jsonObject = JsonConvert.DeserializeObject<DataTransferModel>(data);
+                                jsonObject.ClientId = socketWrapper.ClientId;
+                                if (jsonObject.DataType.Equals("message"))
+                                    UserMessageHandler?.Invoke(jsonObject);
+                                HandleData(jsonObject);
                             }
                             await Task.Delay(TimeSpan.FromSeconds(0));
                         }
@@ -79,31 +89,27 @@ namespace Websockets.Template.CoreX
         }
 #pragma warning restore 4014
 
-        protected void BroadcastMessage(string message)
+        public void BroadcastMessage(string message)
         {
-            foreach (var connection in _connections)
+            foreach (var connection in _dictionary)
             {
-                connection.SendEncoded("broadcast", "title", message);
+                connection.Value.SendEncoded("broadcast", "title", message);
             }
         }
 
-        private void HandleMessage(string data, string clientId)
+        private void HandleData(DataTransferModel jsonObject)
         {
             try
             {
-                var jsonObject = JsonConvert.DeserializeObject<DataTransferModel>(data);
-                jsonObject.ClientId = clientId;
-                Handler?.Invoke(jsonObject);
                 switch (jsonObject.DataType.ToLowerInvariant())
                 {
                     case "broadcast":
                         BroadcastMessage(jsonObject.Data);
                         break;
                     case "guid":
-                        SendGuid(clientId);
+                        SendGuid(jsonObject.ClientId);
                         break;
                 }
-                Debug.WriteLine(data);
             }
             catch (Exception ex)
             {
@@ -111,34 +117,29 @@ namespace Websockets.Template.CoreX
             }
         }
 
-        protected void SendMessage(string clientId, string title, string message)
+        public void SendMessageById(string clientId, string title, string message)
         {
-            foreach (var connection in _connections)
-            {
-                if (connection.ClientId == clientId)
-                {
-                    connection.SendEncoded("message", title, message);
-                }
-            }
+            SocketWrapper connection;
+            _dictionary.TryGetValue(clientId, out connection);
+            connection?.SendEncoded("message", title, message);
+        }
+
+        public void SendMessageBySocketNumber(int socketNumber, string title, string message)
+        {
+            var clientId = GetClientId(socketNumber);
+            SendMessageById(clientId, title, message);
+        }
+
+        public string GetClientId(int playerNumber)
+        {
+            return _dictionary.FirstOrDefault(c => c.Value.SocketNumber == playerNumber).Value.ClientId;
         }
 
         private void SendGuid(string clientId)
         {
-            foreach (var connection in _connections)
-            {
-                if (connection.ClientId == clientId)
-                {
-                    connection.SendEncoded("guid", "guid", clientId);
-                }
-            }
-        }
-
-        private string HandleUpdate(string data)
-        {
-            //var bytes = new byte[5] { 129, 3, 77, 68, 78 };
-            //var baseString = Convert.ToBase64String(bytes);
-            //var testString = Convert.FromBase64String(baseString);
-            return data;
+            SocketWrapper connection;
+            _dictionary.TryGetValue(clientId, out connection);
+            connection?.SendEncoded("guid", "guid", clientId);
         }
     }
 }

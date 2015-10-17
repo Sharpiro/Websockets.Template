@@ -14,7 +14,7 @@ namespace Websockets.Template.CoreX
     public class SocketWrapper
     {
         public string Name { get; set; }
-        public int PlayerNumber { get; set; }
+        public int SocketNumber { get; set; }
         public string ClientId { get; set; }
         public bool IsConnected { get; set; }
 
