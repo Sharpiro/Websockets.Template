@@ -1,11 +1,10 @@
-﻿{
+{
     "version": "1.0.0-*",
     "description": "Websockets.Template.CoreX Class Library",
     "authors": [ "sharpiro" ],
     "tags": [ "" ],
     "projectUrl": "",
     "licenseUrl": "",
-
     "frameworks": {
         "dnx451": { },
         "dnxcore50": {
@@ -20,5 +19,8 @@
                 "System.Text.RegularExpressions": "4.0.11-beta-23225"
             }
         }
+    },
+    "dependencies": {
+        "Newtonsoft.Json": "7.0.1"
     }
 }
