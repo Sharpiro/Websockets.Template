@@ -266,17 +266,31 @@
           "lib/DNXCore50/System.Net.Primitives.dll": {}
         }
       },
-      "System.Net.Sockets/4.1.0-beta-23225": {
+      "System.Net.Sockets/4.1.0-beta-23409": {
         "type": "package",
         "dependencies": {
-          "System.Private.Networking": "4.0.1-beta-23225",
-          "System.Runtime": "4.0.20"
+          "System.IO": "4.0.0",
+          "System.Net.Primitives": "4.0.10",
+          "System.Runtime": "4.0.0",
+          "System.Threading.Tasks": "4.0.0"
         },
         "compile": {
           "ref/dotnet/System.Net.Sockets.dll": {}
+        }
+      },
+      "System.Net.WebSockets/4.0.0-beta-23409": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Win32.Primitives": "4.0.0",
+          "System.Resources.ResourceManager": "4.0.0",
+          "System.Runtime": "4.0.20",
+          "System.Threading.Tasks": "4.0.0"
+        },
+        "compile": {
+          "ref/dotnet/System.Net.WebSockets.dll": {}
         },
         "runtime": {
-          "lib/DNXCore50/System.Net.Sockets.dll": {}
+          "lib/dotnet/System.Net.WebSockets.dll": {}
         }
       },
       "System.ObjectModel/4.0.10": {
@@ -1349,26 +1363,78 @@
         "System.Net.Primitives.nuspec"
       ]
     },
-    "System.Net.Sockets/4.1.0-beta-23225": {
+    "System.Net.Sockets/4.1.0-beta-23409": {
       "type": "package",
       "serviceable": true,
-      "sha512": "9wupz6i8AONzdzaLglcYImU25ivdcKmBXnf9GxE0eS1QqRGWQcWkKyv4dyxMc9E0gt4UuTIktn2FLjrz8ir6sw==",
+      "sha512": "UALxIoOvd5QFGYEt+QIR7KivZbDO+OXVlHlmZ8iMwHTzdif+eYbWgLjpF2oa86OsMbOeVtTzOSFDn6xMTZ5YdQ==",
       "files": [
-        "lib/DNXCore50/System.Net.Sockets.dll",
         "lib/MonoAndroid10/_._",
         "lib/MonoTouch10/_._",
+        "lib/net46/de/System.Net.Sockets.xml",
+        "lib/net46/es/System.Net.Sockets.xml",
+        "lib/net46/fr/System.Net.Sockets.xml",
+        "lib/net46/it/System.Net.Sockets.xml",
+        "lib/net46/ja/System.Net.Sockets.xml",
+        "lib/net46/ko/System.Net.Sockets.xml",
+        "lib/net46/ru/System.Net.Sockets.xml",
         "lib/net46/System.Net.Sockets.dll",
+        "lib/net46/System.Net.Sockets.xml",
+        "lib/net46/zh-hans/System.Net.Sockets.xml",
+        "lib/net46/zh-hant/System.Net.Sockets.xml",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
         "ref/dotnet/System.Net.Sockets.dll",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
+        "ref/net46/de/System.Net.Sockets.xml",
+        "ref/net46/es/System.Net.Sockets.xml",
+        "ref/net46/fr/System.Net.Sockets.xml",
+        "ref/net46/it/System.Net.Sockets.xml",
+        "ref/net46/ja/System.Net.Sockets.xml",
+        "ref/net46/ko/System.Net.Sockets.xml",
+        "ref/net46/ru/System.Net.Sockets.xml",
         "ref/net46/System.Net.Sockets.dll",
+        "ref/net46/System.Net.Sockets.xml",
+        "ref/net46/zh-hans/System.Net.Sockets.xml",
+        "ref/net46/zh-hant/System.Net.Sockets.xml",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
-        "System.Net.Sockets.4.1.0-beta-23225.nupkg",
-        "System.Net.Sockets.4.1.0-beta-23225.nupkg.sha512",
+        "runtime.json",
+        "System.Net.Sockets.4.1.0-beta-23409.nupkg",
+        "System.Net.Sockets.4.1.0-beta-23409.nupkg.sha512",
         "System.Net.Sockets.nuspec"
+      ]
+    },
+    "System.Net.WebSockets/4.0.0-beta-23409": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "JV6MF2GKf8RC6fDIfmVFibvgP95aWalyED/pho058RhbU5YtSpfxa1mTMt4dkMF2ND8/XAxLUWCzIosOPpkvaw==",
+      "files": [
+        "lib/dotnet/de/System.Net.WebSockets.xml",
+        "lib/dotnet/es/System.Net.WebSockets.xml",
+        "lib/dotnet/fr/System.Net.WebSockets.xml",
+        "lib/dotnet/it/System.Net.WebSockets.xml",
+        "lib/dotnet/ja/System.Net.WebSockets.xml",
+        "lib/dotnet/ko/System.Net.WebSockets.xml",
+        "lib/dotnet/ru/System.Net.WebSockets.xml",
+        "lib/dotnet/System.Net.WebSockets.dll",
+        "lib/dotnet/System.Net.WebSockets.xml",
+        "lib/dotnet/zh-hans/System.Net.WebSockets.xml",
+        "lib/dotnet/zh-hant/System.Net.WebSockets.xml",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net46/System.Net.WebSockets.dll",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "ref/dotnet/System.Net.WebSockets.dll",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net46/System.Net.WebSockets.dll",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "System.Net.WebSockets.4.0.0-beta-23409.nupkg",
+        "System.Net.WebSockets.4.0.0-beta-23409.nupkg.sha512",
+        "System.Net.WebSockets.nuspec"
       ]
     },
     "System.ObjectModel/4.0.10": {
@@ -2189,7 +2255,8 @@
       "System.Runtime >= 4.0.21-beta-23225",
       "System.Threading >= 4.0.11-beta-23225",
       "System.Net.Primitives >= 4.0.11-beta-23302",
-      "System.Net.Sockets >= 4.1.0-beta-23225",
+      "System.Net.Sockets >= 4.1.0-beta-23409",
+      "System.Net.WebSockets >= 4.0.0-beta-23409",
       "System.Text.RegularExpressions >= 4.0.11-beta-23225"
     ]
   }

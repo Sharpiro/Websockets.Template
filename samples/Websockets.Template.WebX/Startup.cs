@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
 using Websockets.Template.CoreX;
+using Websockets.Template.CoreX.CardApp;
 
 namespace Websockets.Template.WebX
 {

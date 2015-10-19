@@ -92,14 +92,23 @@ namespace Websockets.Template.CoreX
             var bytes = Encoding.UTF8.GetBytes(data).ToList();
             var length = (byte)bytes.Count;
             bytes.Insert(0, 129);
-            bytes.Insert(1, length);
+            if (bytes.Count <= 127)
+            {
+                bytes.Insert(1, length);
+            }
+            else if (bytes.Count > 127)
+            {
+                bytes.Insert(1, 126);
+                bytes.Insert(2, (byte)((length >> 8) & 255));
+                bytes.Insert(3, (byte)(length & 255));
+            }
             var bytesString = Convert.ToBase64String(bytes.ToArray());
             return bytesString;
         }
 
         private string Decode(byte[] data, int dataLength)
         {
-            if (data[1] - 128 > 128)
+            if (data[1] - 128 > 125)
                 throw new InvalidOperationException("Data is too long, not supported yet...");
             var decoded = new byte[dataLength - 6];
             var encoded = data.Skip(6).Take(decoded.Length).ToArray();

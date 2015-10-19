@@ -11,6 +11,11 @@ socketWrapper.on("action1", () =>
     console.log(`on "clicked" event hit`);
 });
 
+socketWrapper.on("connect", () =>
+{
+    console.log("game on");
+    socketWrapper.send("message", "addplayer", "");
+});
 
 $("#button1").click(() =>
 {

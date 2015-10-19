@@ -9,6 +9,9 @@ var SocketWrapper = (function () {
         this.socket.onopen = function () {
             console.log("connection opened...");
             _this.send("guid", "guid", null);
+            var func = _this.registeredFuncs["connect"];
+            if (func)
+                func();
         };
         this.socket.onmessage = function (message) {
             console.log("message received:");
@@ -55,6 +58,10 @@ socketWrapper.on("ABCD", function () {
 });
 socketWrapper.on("action1", function () {
     console.log("on \"clicked\" event hit");
+});
+socketWrapper.on("connect", function () {
+    console.log("game on");
+    socketWrapper.send("message", "addplayer", "");
 });
 $("#button1").click(function () {
     var dataType = $("#dataType").val();

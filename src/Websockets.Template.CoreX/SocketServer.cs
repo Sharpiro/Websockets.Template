@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Websockets.Template.CoreX.Models;
@@ -23,7 +24,8 @@ namespace Websockets.Template.CoreX
 
         public SocketServer()
         {
-            _tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8095);
+            var websocket = new WebSocket();
+            _tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 56837);//8095
             _dictionary = new ConcurrentDictionary<string, SocketWrapper>();
             _connections = new List<SocketWrapper>();
         }
@@ -76,6 +78,7 @@ namespace Websockets.Template.CoreX
                             {
                                 var jsonObject = JsonConvert.DeserializeObject<DataTransferModel>(data);
                                 jsonObject.ClientId = socketWrapper.ClientId;
+                                jsonObject.SocketNumber = socketWrapper.SocketNumber;
                                 if (jsonObject.DataType.Equals("message"))
                                     UserMessageHandler?.Invoke(jsonObject);
                                 HandleData(jsonObject);

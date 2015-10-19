@@ -17,6 +17,9 @@
         {
             console.log("connection opened...");
             this.send("guid", "guid", null);
+            var func = this.registeredFuncs["connect"];
+            if (func)
+                func();
         };
 
         this.socket.onmessage = (message) =>
