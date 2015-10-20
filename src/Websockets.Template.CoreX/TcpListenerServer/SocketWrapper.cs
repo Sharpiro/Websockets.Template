@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Websockets.Template.CoreX.Models;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 
-
-namespace Websockets.Template.CoreX
+namespace Websockets.Template.CoreX.TcpListenerServer
 {
     public class SocketWrapper
     {
@@ -52,7 +51,7 @@ namespace Websockets.Template.CoreX
             {
                 return Decode(buffer, bufferLength);
             }
-            var data = Encoding.UTF8.GetString(buffer).Trim('\0');
+            var data = Encoding.UTF8.GetString(buffer, 0, bufferLength).Trim('\0');
             Connect(data);
             return null;
         }
@@ -117,7 +116,7 @@ namespace Websockets.Template.CoreX
             {
                 decoded[i] = (byte)(encoded[i] ^ key[i % 4]);
             }
-            var decodedMessage = Encoding.UTF8.GetString(decoded);
+            var decodedMessage = Encoding.UTF8.GetString(decoded, 0, decoded.Length);
             Debug.WriteLine($"Decoded Message: {decodedMessage}");
             return decodedMessage;
         }

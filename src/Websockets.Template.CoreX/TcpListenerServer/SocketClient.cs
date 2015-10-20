@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
-using System.Net.Sockets;
-using System.Text;
+﻿using System.Net.Sockets;
 
-namespace Websockets.Template.CoreX
+namespace Websockets.Template.CoreX.TcpListenerServer
 {
     public class SocketClient
     {
@@ -26,13 +24,13 @@ namespace Websockets.Template.CoreX
 
         public void SendMessage(string message)
         {
-            var messageBytes = Encoding.UTF8.GetBytes($"{message}\r\n");
-            _stream = _tcpClient.GetStream();
-            _stream.Write(messageBytes, 0, messageBytes.Length);
-            var buffer = new byte[256];
-            _stream.Read(buffer, 0, buffer.Length);
-            var data = Encoding.UTF8.GetString(buffer).Trim('\0');
-            Debug.WriteLine($"Response: {data}");
+            //var messageBytes = Encoding.UTF8.GetBytes($"{message}\r\n");
+            //_stream = _tcpClient.GetStream();
+            //_stream.Write(messageBytes, 0, messageBytes.Length);
+            //var buffer = new byte[256];
+            //_stream.Read(buffer, 0, buffer.Length);
+            //var data = Encoding.UTF8.GetString(buffer).Trim('\0');
+            //Debug.WriteLine($"Response: {data}");
         }
 
         public void Close()

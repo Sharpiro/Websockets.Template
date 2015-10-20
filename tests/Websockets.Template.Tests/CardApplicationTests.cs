@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Websockets.Template.CoreX;
 using Websockets.Template.CoreX.CardApp;
+using Websockets.Template.CoreX.TcpListenerServer;
 using Xunit;
 
 namespace Websockets.Template.Tests
@@ -28,7 +28,12 @@ namespace Websockets.Template.Tests
         [Fact]
         public void GetDeckTest()
         {
-            CardDefinitions.GetDeck();
+            //CardDefinitions.GetDeck();
+            var list = new List<string>();
+            foreach (var item in list)
+            {
+                var temp = 2;
+            }
         }
     }
 }

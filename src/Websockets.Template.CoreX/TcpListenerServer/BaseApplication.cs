@@ -1,6 +1,6 @@
 ﻿using Websockets.Template.CoreX.Models;
 
-namespace Websockets.Template.CoreX
+namespace Websockets.Template.CoreX.TcpListenerServer
 {
     public abstract class BaseApplication
     {

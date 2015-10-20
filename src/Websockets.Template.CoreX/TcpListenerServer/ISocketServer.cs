@@ -1,7 +1,7 @@
 ﻿using System;
 using Websockets.Template.CoreX.Models;
 
-namespace Websockets.Template.CoreX
+namespace Websockets.Template.CoreX.TcpListenerServer
 {
     public interface ISocketServer
     {

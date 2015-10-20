@@ -5,26 +5,25 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Websockets.Template.CoreX.Models;
 
-namespace Websockets.Template.CoreX
+namespace Websockets.Template.CoreX.TcpListenerServer
 {
     public class SocketServer : ISocketServer
     {
         public Action<DataTransferModel> UserMessageHandler { get; set; }
         public int MaxConnections { get { return _maxConnections; } set { if (_numberOfConnections < 1) _maxConnections = value; } }
-        protected readonly IList<SocketWrapper> _connections;
-        protected readonly ConcurrentDictionary<string, SocketWrapper> _dictionary;
-        protected readonly TcpListener _tcpListener;
-        protected int _numberOfConnections;
+        private readonly IList<SocketWrapper> _connections;
+        private readonly ConcurrentDictionary<string, SocketWrapper> _dictionary;
+        private readonly TcpListener _tcpListener;
+        private int _numberOfConnections;
         private int _maxConnections = 5;
 
         public SocketServer()
         {
-            var websocket = new WebSocket();
+            //var websocket = new WebSocket();
             _tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 56837);//8095
             _dictionary = new ConcurrentDictionary<string, SocketWrapper>();
             _connections = new List<SocketWrapper>();
