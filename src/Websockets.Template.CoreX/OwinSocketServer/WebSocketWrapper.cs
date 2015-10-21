@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
+using Websockets.Template.CoreX.Models;
 using Websockets.Template.CoreX.TcpListenerServer;
 
 namespace Websockets.Template.CoreX.OwinSocketServer
@@ -17,6 +19,7 @@ namespace Websockets.Template.CoreX.OwinSocketServer
         public override string SubProtocol { get; }
         public override WebSocketState State { get; }
         public CancellationTokenSource CancellationTokenSource { get; set; }
+        public string Id { get; set; }
 
         private Stream _stream;
 
@@ -34,12 +37,17 @@ namespace Websockets.Template.CoreX.OwinSocketServer
             return Task.FromResult(plainText);
         }
 
-        public Task SendEncoded(string message)
+        public void SendEncoded(string dataType, string dataTitle, string data)
         {
-            var responseString = Encode(message);
-            var responseBuffer = Convert.FromBase64String(responseString);
-            _stream.Write(responseBuffer, 0, responseBuffer.Length);
-            return Task.FromResult(0);
+            var dataObj = new DataTransferModel
+            {
+                DataType = dataType,
+                DataTitle = dataTitle,
+                Data = data
+            };
+            var encodedString = Encode(JsonConvert.SerializeObject(dataObj));
+            var encodedBytes = Convert.FromBase64String(encodedString);
+            _stream.Write(encodedBytes, 0, encodedBytes.Length);
         }
 
         public override void Abort()

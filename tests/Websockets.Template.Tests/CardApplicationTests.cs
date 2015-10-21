@@ -28,12 +28,7 @@ namespace Websockets.Template.Tests
         [Fact]
         public void GetDeckTest()
         {
-            //CardDefinitions.GetDeck();
-            var list = new List<string>();
-            foreach (var item in list)
-            {
-                var temp = 2;
-            }
+            CardDefinitions.GetDeck();
         }
     }
 }

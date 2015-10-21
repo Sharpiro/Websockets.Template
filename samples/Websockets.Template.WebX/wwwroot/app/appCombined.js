@@ -52,8 +52,8 @@ var socketWrapper = new SocketWrapper();
 socketWrapper.on("ABCD", function () {
     console.log("ok");
 });
-socketWrapper.on("action1", function () {
-    console.log("on \"clicked\" event hit");
+socketWrapper.on("getcard", function (data) {
+    $("#output").val(data);
 });
 socketWrapper.on("connect", function () {
     console.log("game on");

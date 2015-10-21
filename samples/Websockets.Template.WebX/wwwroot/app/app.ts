@@ -6,15 +6,16 @@ socketWrapper.on("ABCD", () =>
 {
     console.log("ok");
 });
-socketWrapper.on("action1", () =>
+socketWrapper.on("getcard", (data: any) =>
 {
-    console.log(`on "clicked" event hit`);
+    $("#output").val(data);
+    //console.log(`on "clicked" event hit`);
 });
 
 socketWrapper.on("connect", () =>
 {
     console.log("game on");
-    socketWrapper.send("message", "addplayer", "");
+    socketWrapper.send("message", "addplayer", ""); 
 });
 
 $("#button1").click(() =>

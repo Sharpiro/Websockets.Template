@@ -32,11 +32,8 @@ namespace Websockets.Template.CoreX.OwinSocketServer
                 if (socket == null)
                     throw new NullReferenceException("the socket returned was null!");
                 _server.AddSocket(socket);
-                while (!socket.CancellationTokenSource.IsCancellationRequested)
-                {
-                    var result = await socket.Receive();
-                    await socket.SendEncoded(result);
-                }
+                await _server.ListenOnSocket(socket.Id);
+                
             }
             await _next(context);
         }
