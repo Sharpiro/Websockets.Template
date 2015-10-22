@@ -2,12 +2,16 @@ var SocketWrapper = (function () {
     function SocketWrapper() {
         var _this = this;
         this.registeredFuncs = {};
-        this.socket = new WebSocket("ws://localhost:5000");
+        var hostUrl = window.location.href.split("//")[1];
+        this.socket = new WebSocket("ws://" + hostUrl);
         this.on("guid", function (data) {
             _this.guid = data;
         });
         this.socket.onopen = function () {
             console.log("connection opened...");
+            var func = _this.registeredFuncs["connect"];
+            if (func)
+                func();
         };
         this.socket.onmessage = function (message) {
             console.log("message received:");

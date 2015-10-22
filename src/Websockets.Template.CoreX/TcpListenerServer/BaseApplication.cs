@@ -4,18 +4,18 @@ namespace Websockets.Template.CoreX.TcpListenerServer
 {
     public abstract class BaseApplication
     {
-        protected readonly ISocketServer _socketServer;
+        protected readonly ISocketServer SocketServer;
 
         protected BaseApplication(ISocketServer socketServer, int maxConnections)
         {
-            _socketServer = socketServer;
-            _socketServer.MaxConnections = maxConnections;
-            _socketServer.UserMessageHandler = HandleMessage;
+            SocketServer = socketServer;
+            SocketServer.MaxSockets = maxConnections;
+            //SocketServer.UserMessageHandler = HandleMessage;
         }
 
         public void Start()
         {
-            _socketServer.Start();
+            SocketServer.Start();
         }
 
         /// <summary>

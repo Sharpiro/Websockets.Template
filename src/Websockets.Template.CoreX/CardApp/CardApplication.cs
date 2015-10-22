@@ -3,56 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Websockets.Template.CoreX.Models;
+using Websockets.Template.CoreX.OwinSocketServer;
 using Websockets.Template.CoreX.TcpListenerServer;
 
 namespace Websockets.Template.CoreX.CardApp
 {
-    public sealed class CardApplication : BaseApplication
+    public sealed class CardApplication : IWebSocketApplication
     {
+        public string Id { get; set; }
         public List<Card> _deck;
-        private List<Player> _players;
+        private readonly List<Player> _players;
         private const int MaxPlayers = 2;
 
-
-        public CardApplication(ISocketServer socketServer) : base(socketServer, MaxPlayers)
+        public CardApplication()
         {
             _players = new List<Player>();
             _deck = CardDefinitions.GetDeck();
         }
 
-        protected override void HandleMessage(DataTransferModel messageObject)
+        public void HandleMessage(ISocketServer server, DataTransferModel messageObject)
         {
-            switch (messageObject.DataTitle)
+            switch (messageObject.Data)
             {
-                case "addplayer":
-                    AddPlayer(messageObject);
-                    break;
                 case "getcard":
-                    GetCardResponse(messageObject);
+                    GetCardResponse(server, messageObject);
                     break;
                 case "player1":
-                    _socketServer.SendMessageBySocketNumber(1, "player1", messageObject.Data);
+                    server.SendMessageBySocketNumber(1, "player1", messageObject.Data);
                     break;
                 case "player2":
-                    _socketServer.SendMessageBySocketNumber(2, "player2", messageObject.Data);
+                    server.SendMessageBySocketNumber(2, "player2", messageObject.Data);
                     break;
             }
         }
 
-        private void AddPlayer(DataTransferModel messageObject)
+        public void AddPlayer(DataTransferModel messageObject)
         {
             if (_players.Count >= MaxPlayers)
                 _players.RemoveAt(0);
-            _players.Add(new Player {Number = messageObject.SocketNumber});
+            _players.Add(new Player
+            {
+                SocketId = messageObject.SocketId,
+                SocketNumber = messageObject.SocketNumber
+            });
         }
 
-        private void GetCardResponse(DataTransferModel messageObject)
+        private void GetCardResponse(ISocketServer server, DataTransferModel messageObject)
         {
             var card = GetCard();
             var cardJson = JsonConvert.SerializeObject(card);
             var playerNumber = messageObject.SocketNumber;
             _players[playerNumber - 1].Hand.Add(card);
-            _socketServer.SendMessageById(messageObject.ClientId, messageObject.DataTitle, cardJson);
+            server.SendMessageById(messageObject.SocketId, messageObject.DataTitle, cardJson);
         }
 
         public Card GetCard()
@@ -74,5 +76,17 @@ namespace Websockets.Template.CoreX.CardApp
         {
 
         }
+
+        public bool IsFull()
+        {
+            if (_players.Count > MaxPlayers)
+                throw new Exception("too many players in game this shouldn't happen...");
+            return _players.Count == MaxPlayers;
+        }
+
+        //public IEnumerable<string> GetPlayerSocketIds()
+        //{
+        //    return _players.Select(p => p.SocketId);
+        //}
     }
 }

@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Websockets.Template.CoreX.Models;
-using Websockets.Template.CoreX.TcpListenerServer;
 
 namespace Websockets.Template.CoreX.OwinSocketServer
 {
@@ -20,7 +19,8 @@ namespace Websockets.Template.CoreX.OwinSocketServer
         public override WebSocketState State { get; }
         public CancellationTokenSource CancellationTokenSource { get; set; }
         public string Id { get; set; }
-
+        public int Number { get; set; }
+        public string ApplicationId { get; set; }
         private Stream _stream;
 
         public WebSocketWrapper(Stream stream)
@@ -43,11 +43,18 @@ namespace Websockets.Template.CoreX.OwinSocketServer
             {
                 DataType = dataType,
                 DataTitle = dataTitle,
-                Data = data
+                Data = data,
+                SocketId = Id,
+                SocketNumber = Number
             };
             var encodedString = Encode(JsonConvert.SerializeObject(dataObj));
             var encodedBytes = Convert.FromBase64String(encodedString);
             _stream.Write(encodedBytes, 0, encodedBytes.Length);
+        }
+
+        public void Close()
+        {
+            _stream.Dispose();
         }
 
         public override void Abort()
@@ -70,7 +77,7 @@ namespace Websockets.Template.CoreX.OwinSocketServer
             throw new NotImplementedException();
         }
 
-        public async override Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> bufferSegment, CancellationToken cancellationToken)
+        public override Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> bufferSegment, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -97,7 +104,7 @@ namespace Websockets.Template.CoreX.OwinSocketServer
             return decodedMessage;
         }
 
-        public static string Encode(string data)
+        private string Encode(string data)
         {
             var bytes = Encoding.UTF8.GetBytes(data).ToList();
             var length = (byte)bytes.Count;

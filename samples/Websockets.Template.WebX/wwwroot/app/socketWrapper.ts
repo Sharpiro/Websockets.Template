@@ -6,7 +6,8 @@
 
     constructor()
     {
-        this.socket = new WebSocket("ws://localhost:5000");
+        const hostUrl = window.location.href.split("//")[1];
+        this.socket = new WebSocket(`ws://${hostUrl}`);
 
         this.on("guid", (data: any) =>
         {
@@ -17,9 +18,9 @@
         {
             console.log("connection opened...");
             //this.send("guid", "guid", null);
-            //var func = this.registeredFuncs["connect"];
-            //if (func)
-            //    func();
+            var func = this.registeredFuncs["connect"];
+            if (func)
+                func();
         };
 
         this.socket.onmessage = (message) =>

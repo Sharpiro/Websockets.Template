@@ -12,7 +12,6 @@ namespace Websockets.Template.Tests
         private readonly CardApplication _cardApplication;
         public CardApplicationTests()
         {
-            _cardApplication = new CardApplication(new SocketServer());
         }
 
         [Fact]

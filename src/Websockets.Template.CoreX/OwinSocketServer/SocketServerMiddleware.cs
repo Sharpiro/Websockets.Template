@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Features;
-using Websockets.Template.CoreX.TcpListenerServer;
+using Websockets.Template.CoreX.CardApp;
 
 namespace Websockets.Template.CoreX.OwinSocketServer
 {
@@ -22,18 +19,21 @@ namespace Websockets.Template.CoreX.OwinSocketServer
             _server = new WebSocketServer();
         }
 
+        public SocketServerMiddleware(RequestDelegate next, Type appType)
+        {
+            _next = next;
+            _server = new WebSocketServer();
+            _server.UseApp(appType);
+        }
+
         public async Task Invoke(HttpContext context)
         {
             var upgradeFeature = context.Features.Get<IHttpUpgradeFeature>();
             if (upgradeFeature.IsUpgradableRequest)
             {
-                context.Features.Set<IHttpWebSocketFeature>(new UpgradeHandshake(context, upgradeFeature));
-                var socket = await context.WebSockets.AcceptWebSocketAsync() as WebSocketWrapper;
-                if (socket == null)
-                    throw new NullReferenceException("the socket returned was null!");
-                _server.AddSocket(socket);
-                await _server.ListenOnSocket(socket.Id);
-                
+                var socketId = await _server.UpgradeToWebsocket(context, upgradeFeature);
+                await _server.ListenOnSocket(socketId);
+
             }
             await _next(context);
         }

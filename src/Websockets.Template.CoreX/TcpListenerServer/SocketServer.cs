@@ -14,12 +14,12 @@ namespace Websockets.Template.CoreX.TcpListenerServer
     public class SocketServer : ISocketServer
     {
         public Action<DataTransferModel> UserMessageHandler { get; set; }
-        public int MaxConnections { get { return _maxConnections; } set { if (_numberOfConnections < 1) _maxConnections = value; } }
+        public int MaxSockets { get { return _maxSockets; } set { if (_numberOfConnections < 1) _maxSockets = value; } }
         private readonly IList<SocketWrapper> _connections;
         private readonly ConcurrentDictionary<string, SocketWrapper> _dictionary;
         private readonly TcpListener _tcpListener;
         private int _numberOfConnections;
-        private int _maxConnections = 5;
+        private int _maxSockets = 5;
 
         public SocketServer()
         {
@@ -48,7 +48,7 @@ namespace Websockets.Template.CoreX.TcpListenerServer
                 while (true)
                 {
                     var socket = await _tcpListener.AcceptSocketAsync();
-                    if (_dictionary.Count == _maxConnections)
+                    if (_dictionary.Count == _maxSockets)
                     {
                         var oldestSocket = _connections.FirstOrDefault();
                         oldestSocket?.Destroy();
@@ -76,7 +76,7 @@ namespace Websockets.Template.CoreX.TcpListenerServer
                             if (!string.IsNullOrEmpty(data))
                             {
                                 var jsonObject = JsonConvert.DeserializeObject<DataTransferModel>(data);
-                                jsonObject.ClientId = socketWrapper.ClientId;
+                                jsonObject.SocketId = socketWrapper.ClientId;
                                 jsonObject.SocketNumber = socketWrapper.SocketNumber;
                                 if (jsonObject.DataType.Equals("message"))
                                     UserMessageHandler?.Invoke(jsonObject);
@@ -109,7 +109,7 @@ namespace Websockets.Template.CoreX.TcpListenerServer
                         BroadcastMessage(jsonObject.Data);
                         break;
                     case "guid":
-                        SendGuid(jsonObject.ClientId);
+                        SendGuid(jsonObject.SocketId);
                         break;
                 }
             }
@@ -128,11 +128,11 @@ namespace Websockets.Template.CoreX.TcpListenerServer
 
         public void SendMessageBySocketNumber(int socketNumber, string title, string message)
         {
-            var clientId = GetClientId(socketNumber);
-            SendMessageById(clientId, title, message);
+            var socketId = GetSocketId(socketNumber);
+            SendMessageById(socketId, title, message);
         }
 
-        public string GetClientId(int playerNumber)
+        public string GetSocketId(int playerNumber)
         {
             return _dictionary.FirstOrDefault(c => c.Value.SocketNumber == playerNumber).Value.ClientId;
         }

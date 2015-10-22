@@ -1,17 +1,13 @@
-﻿using System;
-using Websockets.Template.CoreX.Models;
-
-namespace Websockets.Template.CoreX.TcpListenerServer
+﻿namespace Websockets.Template.CoreX.TcpListenerServer
 {
     public interface ISocketServer
     {
-        Action<DataTransferModel> UserMessageHandler { get; set; }
-        int MaxConnections { get; set; }
+        int MaxSockets { get; set; }
         void Start();
         void Stop();
         void BroadcastMessage(string message);
         void SendMessageById(string clientId, string title, string message);
         void SendMessageBySocketNumber(int socketNumber, string title, string message);
-        string GetClientId(int playerNumber);
+        string GetSocketId(int socketNumber);
     }
 }

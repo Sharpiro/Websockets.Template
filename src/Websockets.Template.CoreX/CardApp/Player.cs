@@ -4,7 +4,8 @@ namespace Websockets.Template.CoreX.CardApp
 {
     public class Player
     {
-        public int Number { get; set; }
+        public string SocketId { get; set; }
+        public int SocketNumber { get; set; }
         public List<Card> Hand { get; set; }
 
         public Player()
