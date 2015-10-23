@@ -9,5 +9,8 @@ namespace Websockets.Template.CoreX.OwinSocketServer
         void HandleMessage(ISocketServer server, DataTransferModel messageObject);
         void AddPlayer(DataTransferModel messageObject);
         bool IsFull();
+        void RemovePlayer(string socketId);
+        bool IsEmpty();
+        
     }
 }

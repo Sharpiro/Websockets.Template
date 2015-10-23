@@ -6,6 +6,7 @@ namespace Websockets.Template.CoreX.CardApp
     {
         public string SocketId { get; set; }
         public int SocketNumber { get; set; }
+        public int PlayerNumber { get; set; }
         public List<Card> Hand { get; set; }
 
         public Player()

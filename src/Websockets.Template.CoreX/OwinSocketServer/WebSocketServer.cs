@@ -14,11 +14,9 @@ namespace Websockets.Template.CoreX.OwinSocketServer
 {
     public class WebSocketServer : ISocketServer
     {
-        public int MaxSockets { get { return _maxSockets; } set { if (_numberOfConnections < 1) _maxSockets = value; } }
+        public int MaxSockets { get { return _maxSockets; } set { if (_sockets.Count < 1) _maxSockets = value; } }
         private readonly ConcurrentDictionary<string, WebSocketWrapper> _sockets;
-        private int _numberOfConnections;
         private int _maxSockets = 5;
-        //private IWebSocketApplication _application;
         private readonly ApplicationHandler _applicationHandler;
 
         public WebSocketServer()
@@ -29,12 +27,22 @@ namespace Websockets.Template.CoreX.OwinSocketServer
 
         public void AddSocket(WebSocketWrapper newSocket)
         {
-            _numberOfConnections++;
+            //_numberOfConnections++;
             var socketId = Guid.NewGuid().ToString();
             newSocket.Id = socketId;
-            newSocket.Number = _numberOfConnections;
-            newSocket.CancellationTokenSource = new CancellationTokenSource();
             _sockets.TryAdd(socketId, newSocket);
+            newSocket.Number = _sockets.Count;
+            newSocket.CancellationTokenSource = new CancellationTokenSource();
+            Debug.WriteLine($"# of Sockets: {_sockets.Count}");
+        }
+
+        public void RemoveSocket(string oldSocketId)
+        {
+            WebSocketWrapper socket;
+            _sockets.TryRemove(oldSocketId, out socket);
+            _applicationHandler.RemoveSocketFromApplication(oldSocketId, socket.ApplicationId);
+            socket.Close();
+            socket = null;
         }
 
         public async Task ListenOnSocket(string socketId)
@@ -66,11 +74,25 @@ namespace Websockets.Template.CoreX.OwinSocketServer
 
         private void HandleReceivedData(string messageSource, string socketId, int socketNumber)
         {
+            if (messageSource.Equals("close"))
+            {
+                RemoveSocket(socketId);
+                return;
+            }
+            if (messageSource.Equals("keep-alive"))
+            {
+                SendMessageById(socketId, "keep-alive", "keep-alive");
+                return;
+            }
+            Debug.WriteLine($"Message: {messageSource}");
             var messageObject = JsonConvert.DeserializeObject<DataTransferModel>(messageSource);
             messageObject.SocketId = socketId;
             messageObject.SocketNumber = socketNumber;
             switch (messageObject.DataType.ToLowerInvariant())
             {
+                case "broadcast":
+                    BroadcastMessage(messageObject.Data);
+                    break;
                 case "message":
                     _applicationHandler?.HandleMessage(this, messageObject);
                     break;
@@ -94,7 +116,7 @@ namespace Websockets.Template.CoreX.OwinSocketServer
         {
             foreach (var socket in _sockets)
             {
-                socket.Value.SendEncoded("broadcast", "title", message);
+                socket.Value.SendEncoded("broadcast", "broadcast", message);
             }
         }
 

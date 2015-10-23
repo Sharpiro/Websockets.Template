@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Http;
 using Microsoft.Framework.DependencyInjection;
 using Websockets.Template.CoreX;
 using Websockets.Template.CoreX.CardApp;
@@ -18,10 +19,13 @@ namespace Websockets.Template.WebX
 
         public void Configure(IApplicationBuilder app)
         {
-            
-            //app.UseIISPlatformHandler();
-            app.UseOwinSocketServer<CardApplication>();
 
+            //app.UseIISPlatformHandler();
+            app.Map(new PathString("/socket"), builder =>
+            {
+                builder.UseOwinSocketServer<CardApplication>();
+
+            });
             app.UseDefaultFiles();
             app.UseStaticFiles();
         }

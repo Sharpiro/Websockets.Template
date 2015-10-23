@@ -3,7 +3,7 @@ var SocketWrapper = (function () {
         var _this = this;
         this.registeredFuncs = {};
         var hostUrl = window.location.href.split("//")[1];
-        this.socket = new WebSocket("ws://" + hostUrl);
+        this.socket = new WebSocket("ws://" + hostUrl + "socket");
         this.on("guid", function (data) {
             _this.guid = data;
         });
@@ -27,7 +27,7 @@ var SocketWrapper = (function () {
             var functionName = jsonObject.dataTitle;
             var func = _this.registeredFuncs[functionName];
             if (func)
-                func(jsonObject.data);
+                func(jsonObject);
         };
         this.socket.onclose = function () {
             console.log("connection closed...");
@@ -59,9 +59,14 @@ socketWrapper.on("ABCD", function () {
 socketWrapper.on("getcard", function (data) {
     $("#output").val(data);
 });
-socketWrapper.on("connect", function () {
+socketWrapper.on("connect", function (data) {
     console.log("game on");
     socketWrapper.send("message", "addplayer", "");
+});
+socketWrapper.on("addplayer", function (data) {
+    $("#socketId").text(data.socketId);
+    $("#appId").text(data.applicationId);
+    console.log("game on");
 });
 $("#button1").click(function () {
     var dataType = $("#dataType").val();

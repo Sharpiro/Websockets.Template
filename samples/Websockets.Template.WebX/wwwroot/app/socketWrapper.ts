@@ -7,7 +7,7 @@
     constructor()
     {
         const hostUrl = window.location.href.split("//")[1];
-        this.socket = new WebSocket(`ws://${hostUrl}`);
+        this.socket = new WebSocket(`ws://${hostUrl}socket`);
 
         this.on("guid", (data: any) =>
         {
@@ -41,7 +41,7 @@
             var functionName: any = jsonObject.dataTitle;
             var func = this.registeredFuncs[functionName];
             if (func)
-                func(jsonObject.data);
+                func(jsonObject);
         }
 
         this.socket.onclose = () =>

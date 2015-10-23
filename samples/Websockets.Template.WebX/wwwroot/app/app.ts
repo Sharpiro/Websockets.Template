@@ -12,10 +12,17 @@ socketWrapper.on("getcard", (data: any) =>
     //console.log(`on "clicked" event hit`);
 });
 
-socketWrapper.on("connect", () =>
+socketWrapper.on("connect", (data: any) =>
 {
     console.log("game on");
-    socketWrapper.send("message", "addplayer", ""); 
+    socketWrapper.send("message", "addplayer", "");
+});
+
+socketWrapper.on("addplayer", (data: any) =>
+{
+    $("#socketId").text(data.socketId);
+    $("#appId").text(data.applicationId);
+    console.log("game on");
 });
 
 $("#button1").click(() =>
@@ -25,3 +32,14 @@ $("#button1").click(() =>
     var dataValue = $("#dataValue").val();
     socketWrapper.send(dataType, dataTitle, dataValue);
 });
+
+
+interface IDataTransferObject
+{
+    dataType: string;
+    dataTitle: string;
+    data: string;
+    applicationId: string;
+    socketId: string;
+    socketNumber: number;
+}

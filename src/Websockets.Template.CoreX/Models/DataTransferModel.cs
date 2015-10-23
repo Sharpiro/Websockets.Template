@@ -15,6 +15,6 @@ namespace Websockets.Template.CoreX.Models
         [JsonProperty("socketNumber")]
         public int SocketNumber { get; set; }
         [JsonProperty("applicationId")]
-        public int ApplicationId { get; set; }
+        public string ApplicationId { get; set; }
     }
 }

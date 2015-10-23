@@ -20,7 +20,7 @@ namespace Websockets.Template.Tests
             Card card;
             while ((card = _cardApplication.GetCard()) != null)
             {
-                var temp = _cardApplication._deck.Count;
+                //var temp = _cardApplication._deck.Count;
             }
         }
 
