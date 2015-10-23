@@ -1,0 +1,67 @@
+﻿<div class="container" style="padding-top: 25px">
+    <div class="row">
+        <div class="col-md-4">
+            <label>Socket Id</label>
+            <span>{{vm.socketId}}</span>
+        </div>
+        <div class="col-md-4">
+            <label>Application Id</label>
+            <span>{{vm.applicationId}}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <span>dataType</span>
+            <select class="form-control" ng-model="dataType">
+                <option value="message">message</option>
+                <option value="broadcast">broadcast</option>
+                <option value="guid">guid</option>
+            </select>
+            <span>dataTitle</span>
+            <input ng-model="dataTitle" type="text" class="form-control" />
+            <span>dataValue</span>
+            <input ng-model="dataValue" type="text" class="form-control" />
+            <span>Output</span>
+            <input ng-model="output" type="text" readonly class="form-control" />
+            <button ng-click="vm.submitButtonClick(dataType, dataTitle, dataValue)" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+
+    <div class="row" style="padding-top: 25px">
+        <div class="col-md-4">
+            <label>Card: </label>
+            <span>{{vm.lastCard.displayName}}</span>
+        </div>
+        <div class="col-md-4">
+            <label>Result: </label>
+            <span>{{vm.guessResult}}</span>
+        </div>
+        <div class="col-md-4">
+            <label>Money: </label>
+            <span>{{vm.money}}</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" style="padding-top: 25px">
+            <input type="number" ng-model="vm.currentBet" />
+            <button ng-click="vm.hi(vm.currentBet)" class="btn btn-default">Hi</button>
+            <button ng-click="vm.lo(vm.currentBet)" class="btn btn-default">Lo</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" style="padding-top: 25px">
+            <button ng-click="vm.resetDeck()" class="btn btn-default">Reset Deck</button>
+        </div>
+    </div>
+    <!--<div class="row">
+        <div class="col-md-12">
+            <table class="table">
+                <tr ng-repeat="card in vm.hand">
+                    <td>{{card.displayName}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>-->
+</div>

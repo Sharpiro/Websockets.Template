@@ -23,7 +23,7 @@ namespace Websockets.Template.WebX
             //app.UseIISPlatformHandler();
             app.Map(new PathString("/socket"), builder =>
             {
-                builder.UseOwinSocketServer<CardApplication>();
+                builder.UseOwinSocketServer<PokerApplication>();
 
             });
             app.UseDefaultFiles();

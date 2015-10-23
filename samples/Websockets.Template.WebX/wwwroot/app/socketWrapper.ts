@@ -6,8 +6,8 @@
 
     constructor()
     {
-        const hostUrl = window.location.href.split("//")[1];
-        this.socket = new WebSocket(`ws://${hostUrl}socket`);
+        const hostUrl = window.location.href.split("/")[2];
+        this.socket = new WebSocket(`ws://${hostUrl}/socket`);
 
         this.on("guid", (data: any) =>
         {

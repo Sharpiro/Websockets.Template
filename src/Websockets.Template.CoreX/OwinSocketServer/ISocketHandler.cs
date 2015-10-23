@@ -1,10 +1,8 @@
-﻿namespace Websockets.Template.CoreX.TcpListenerServer
+﻿namespace Websockets.Template.CoreX.OwinSocketServer
 {
-    public interface ISocketServer
+    public interface ISocketHandler
     {
         int MaxSockets { get; set; }
-        void Start();
-        void Stop();
         void BroadcastMessage(string message);
         void SendMessageById(string clientId, string title, string message);
         void SendMessageBySocketNumber(int socketNumber, string title, string message);

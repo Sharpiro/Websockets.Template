@@ -29,56 +29,80 @@ namespace Websockets.Template.CoreX.OwinSocketServer
                     if (!application.IsEmpty()) continue;
                     IWebSocketApplication app;
                     _applications.TryRemove(application.Id, out app);
-                    app = null;
                 }
                 //System.GC.Collect();
                 Debug.WriteLine($"# of Apps: {_applications.Count}");
             }
         }
 
-        private void AddApplication()
+        private string AddApplication()
         {
             var appId = Guid.NewGuid().ToString();
-            var newApp = new CardApplication
+            var newApp = new PokerApplication
             {
                 Id = appId
             };
             _applications.TryAdd(appId, newApp);
             Debug.WriteLine($"# of Apps: {_applications.Count}");
+            return appId;
         }
 
-        public void HandleMessage(WebSocketServer webSocketServer, DataTransferModel messageObject)
+        public void HandleMessage(WebSocketHandler socketHandler, DataTransferModel messageObject)
         {
             switch (messageObject.DataTitle.ToLowerInvariant())
             {
                 case "addplayer":
-                    AddPlayer(webSocketServer, messageObject);
-                    webSocketServer.SendMessageById(messageObject.SocketId, "addplayer", "success");
+                    var appId = AddSocketToApplication(socketHandler, messageObject);
+                    TryStartApplication(appId, socketHandler);
+                    socketHandler.SendMessageById(messageObject.SocketId, "addplayer", "success");
                     break;
                 case "update":
-                    GiveToApplication(webSocketServer, messageObject);
+                    GiveToApplication(socketHandler, messageObject);
                     break;
             }
         }
 
-        private void AddPlayer(WebSocketServer webSocketServer, DataTransferModel messageObject)
+        /// <summary>
+        /// Tries to add a socket to an existing application.  If none are found it creates a new one and adds the socket.
+        /// </summary>
+        /// <param name="webSocketServer"></param>
+        /// <param name="messageObject"></param>
+        /// <returns>The id of the application that received the socket</returns>
+        private string AddSocketToApplication(WebSocketHandler socketHandler, DataTransferModel messageObject)
         {
+            var openApplicationId = GetOpenApplicationId() ?? AddApplication();
+            var currentApp = _applications[openApplicationId];
+            currentApp.AddPlayer(messageObject);
+            socketHandler.UpdateWebSocketApplicationId(messageObject.SocketId, currentApp.Id);
+            return currentApp.Id;
+        }
+
+        private void TryStartApplication(string applicationId, WebSocketHandler socketHandler)
+        {
+            var application = _applications[applicationId];
+            if (application.IsFull() && !application.IsStarted)
+                application.Start(socketHandler);
+        }
+
+        private string GetOpenApplicationId()
+        {
+            string openApplicationId = null;
             foreach (var application in _applications)
             {
                 if (application.Value.IsFull()) continue;
-                application.Value.AddPlayer(messageObject);
-                webSocketServer.UpdateWebSocketApplicationId(messageObject.SocketId, application.Key);
-                return;
+                openApplicationId = application.Value.Id;
+                break;
             }
-            AddApplication();
-            AddPlayer(webSocketServer, messageObject);
+            return openApplicationId;
         }
 
-        private void GiveToApplication(WebSocketServer webSocketServer, DataTransferModel messageObject)
+        private void GiveToApplication(WebSocketHandler socketHandler, DataTransferModel messageObject)
         {
-            var currentAppId = webSocketServer.getApplicationIdFromSocketId(messageObject.SocketId);
+            var socket = socketHandler.GetSocketById(messageObject.SocketId);
+            var currentAppId = socket.ApplicationId;
+            //var currentAppId = webSocketServer.getApplicationIdFromSocketId(messageObject.SocketId);
             messageObject.ApplicationId = currentAppId;
-            _applications[currentAppId].HandleMessage(webSocketServer, messageObject);
+            _applications[currentAppId].HandleMessage(socketHandler, messageObject);
         }
 
         public void RemoveSocketFromApplication(string socketId, string applicationId)

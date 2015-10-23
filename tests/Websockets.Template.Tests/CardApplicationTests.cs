@@ -17,11 +17,14 @@ namespace Websockets.Template.Tests
         [Fact]
         public void GetCardTest()
         {
-            Card card;
-            while ((card = _cardApplication.GetCard()) != null)
+            var card = new Card
             {
-                //var temp = _cardApplication._deck.Count;
-            }
+                DeckPosition = 1,
+                Number = 2,
+                Suite = "diamonds",
+                Value = "whatever"
+            };
+            var cardString = card.ToString();
         }
 
         [Fact]

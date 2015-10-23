@@ -36,19 +36,23 @@ namespace Websockets.Template.CoreX.OwinSocketServer
                 var bufferSegment = new ArraySegment<byte>(buffer);
                 var bufferLength = _stream.Read(bufferSegment.Array, 0, bufferSegment.Array.Length);
                 string plainText;
-                if (buffer.FirstOrDefault().Equals(136))
+                var firstByte = buffer.FirstOrDefault();
+                if (firstByte.Equals(136))
                 {
                     plainText = "close";
-                    return Task.FromResult(plainText);
                 }
-                if (buffer.FirstOrDefault().Equals(138))
+                else if (firstByte.Equals(138))
                 {
                     plainText = "keep-alive";
-                    return Task.FromResult(plainText);
                 }
-                plainText = Decode(buffer, bufferLength);
-                if (string.IsNullOrEmpty(plainText))
-                    Debug.WriteLine("null or rempty in receive");
+                else if (firstByte.Equals(129))
+                {
+                    plainText = Decode(buffer, bufferLength);
+                }
+                else
+                {
+                    throw new InvalidDataException("the first byte was unknown");
+                }
                 return Task.FromResult(plainText);
 
             }

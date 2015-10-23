@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Features;
-using Websockets.Template.CoreX.CardApp;
 
 namespace Websockets.Template.CoreX.OwinSocketServer
 {

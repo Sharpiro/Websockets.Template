@@ -8,10 +8,11 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Websockets.Template.CoreX.Models;
+using Websockets.Template.CoreX.OwinSocketServer;
 
 namespace Websockets.Template.CoreX.TcpListenerServer
 {
-    public class SocketServer : ISocketServer
+    public class SocketServer : ISocketHandler
     {
         public Action<DataTransferModel> UserMessageHandler { get; set; }
         public int MaxSockets { get { return _maxSockets; } set { if (_numberOfConnections < 1) _maxSockets = value; } }
