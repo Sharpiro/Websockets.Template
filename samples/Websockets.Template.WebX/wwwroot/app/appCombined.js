@@ -84,7 +84,6 @@ var MainController = (function () {
         this.socket.on("addplayer", function (data) {
             _this.socketId = data.socketId;
             _this.applicationId = data.applicationId;
-            _this.socket.send("message", "update", "getcard");
             _this.scope.$apply();
             console.log("game joined");
         });
@@ -96,6 +95,10 @@ var MainController = (function () {
                 _this.hand.push(card);
             _this.scope.$apply();
         });
+        this.socket.on("reset", function () {
+            _this.hand.length = 0;
+            _this.scope.$apply();
+        });
     };
     MainController.prototype.submitButtonClick = function (dataType, dataTitle, dataValue) {
         this.socket.send(dataType, dataTitle, dataValue);
@@ -104,6 +107,10 @@ var MainController = (function () {
     MainController.prototype.resetDeck = function () {
         this.socket.send("message", "update", "resetdeck");
         this.hand.length = 0;
+    };
+    MainController.prototype.bet = function (currentBet) {
+        this.currentBet = currentBet;
+        this.socket.send("message", "bet", currentBet);
     };
     return MainController;
 })();

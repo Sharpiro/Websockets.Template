@@ -7,11 +7,12 @@ namespace Websockets.Template.CoreX.OwinSocketServer
     {
         string Id { get; set; }
         bool IsStarted { get; set; }
-        void HandleMessage(WebSocketHandler socketHandler, DataTransferModel messageObject);
+        void HandleMessage(DataTransferModel messageObject);
         void AddPlayer(DataTransferModel messageObject);
         bool IsFull();
         void RemovePlayer(string socketId);
         bool IsEmpty();
-        void Start(ISocketHandler handler);
+        void Start();
+        void Stop();
     }
 }

@@ -10,16 +10,19 @@ namespace Websockets.Template.CoreX.OwinSocketServer
     public class ApplicationHandler
     {
         private readonly ConcurrentDictionary<string, IWebSocketApplication> _applications;
+        private readonly ISocketHandler _socketHandler;
 
-        public ApplicationHandler()
+        public ApplicationHandler(ISocketHandler socketHandler)
         {
             _applications = new ConcurrentDictionary<string, IWebSocketApplication>();
+            _socketHandler = socketHandler;
             Purge();
         }
 
         private async void Purge()
         {
             while (true)
+
             {
                 await Task.Delay(TimeSpan.FromSeconds(30));
                 Debug.WriteLine("purging applications....");
@@ -38,7 +41,7 @@ namespace Websockets.Template.CoreX.OwinSocketServer
         private string AddApplication()
         {
             var appId = Guid.NewGuid().ToString();
-            var newApp = new PokerApplication
+            var newApp = new PokerApplication(_socketHandler)
             {
                 Id = appId
             };
@@ -47,41 +50,40 @@ namespace Websockets.Template.CoreX.OwinSocketServer
             return appId;
         }
 
-        public void HandleMessage(WebSocketHandler socketHandler, DataTransferModel messageObject)
+        public void HandleMessage(DataTransferModel messageObject)
         {
-            switch (messageObject.DataTitle.ToLowerInvariant())
+            if (messageObject.DataTitle.ToLowerInvariant().Equals("addplayer"))
             {
-                case "addplayer":
-                    var appId = AddSocketToApplication(socketHandler, messageObject);
-                    TryStartApplication(appId, socketHandler);
-                    socketHandler.SendMessageById(messageObject.SocketId, "addplayer", "success");
-                    break;
-                case "update":
-                    GiveToApplication(socketHandler, messageObject);
-                    break;
+                var appId = AddSocketToApplication(messageObject);
+                TryStartApplication(appId);
+                _socketHandler.SendMessageById(messageObject.SocketId, "addplayer", "success");
+            }
+            else
+            {
+                GiveToApplication(messageObject);
             }
         }
 
         /// <summary>
         /// Tries to add a socket to an existing application.  If none are found it creates a new one and adds the socket.
         /// </summary>
-        /// <param name="webSocketServer"></param>
+        /// <param name="socketHandler"></param>
         /// <param name="messageObject"></param>
         /// <returns>The id of the application that received the socket</returns>
-        private string AddSocketToApplication(WebSocketHandler socketHandler, DataTransferModel messageObject)
+        private string AddSocketToApplication(DataTransferModel messageObject)
         {
             var openApplicationId = GetOpenApplicationId() ?? AddApplication();
             var currentApp = _applications[openApplicationId];
             currentApp.AddPlayer(messageObject);
-            socketHandler.UpdateWebSocketApplicationId(messageObject.SocketId, currentApp.Id);
+            _socketHandler.UpdateWebSocketApplicationId(messageObject.SocketId, currentApp.Id);
             return currentApp.Id;
         }
 
-        private void TryStartApplication(string applicationId, WebSocketHandler socketHandler)
+        private void TryStartApplication(string applicationId)
         {
             var application = _applications[applicationId];
             if (application.IsFull() && !application.IsStarted)
-                application.Start(socketHandler);
+                application.Start();
         }
 
         private string GetOpenApplicationId()
@@ -96,18 +98,19 @@ namespace Websockets.Template.CoreX.OwinSocketServer
             return openApplicationId;
         }
 
-        private void GiveToApplication(WebSocketHandler socketHandler, DataTransferModel messageObject)
+        private void GiveToApplication(DataTransferModel messageObject)
         {
-            var socket = socketHandler.GetSocketById(messageObject.SocketId);
+            var socket = _socketHandler.GetSocketById(messageObject.SocketId);
             var currentAppId = socket.ApplicationId;
             //var currentAppId = webSocketServer.getApplicationIdFromSocketId(messageObject.SocketId);
             messageObject.ApplicationId = currentAppId;
-            _applications[currentAppId].HandleMessage(socketHandler, messageObject);
+            _applications[currentAppId].HandleMessage(messageObject);
         }
 
         public void RemoveSocketFromApplication(string socketId, string applicationId)
         {
             _applications[applicationId].RemovePlayer(socketId);
+            _applications[applicationId].Stop();
         }
     }
 }

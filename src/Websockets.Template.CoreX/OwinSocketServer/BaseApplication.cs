@@ -9,11 +9,14 @@ namespace Websockets.Template.CoreX.OwinSocketServer
     {
         public string Id { get; set; }
         public bool IsStarted { get; set; }
+        public bool UpdatingRequest { get; set; }
         protected readonly ConcurrentDictionary<string, Player> Players;
         protected int MaxPlayers { get; set; } = 2;
+        protected ISocketHandler SocketHandler;
 
-        protected BaseApplication()
+        protected BaseApplication(ISocketHandler socketHandler)
         {
+            SocketHandler = socketHandler;
             Players = new ConcurrentDictionary<string, Player>();
         }
 

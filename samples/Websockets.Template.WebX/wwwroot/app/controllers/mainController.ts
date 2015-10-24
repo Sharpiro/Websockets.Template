@@ -30,7 +30,6 @@ class MainController
         {
             this.socketId = data.socketId;
             this.applicationId = data.applicationId;
-            this.socket.send("message", "update", "getcard");
             this.scope.$apply();
             console.log("game joined");
         });
@@ -48,6 +47,12 @@ class MainController
 
             this.scope.$apply();
         });
+
+        this.socket.on("reset", () =>
+        {
+            this.hand.length = 0;
+            this.scope.$apply();
+        });
     }
 
     private submitButtonClick(dataType: any, dataTitle: any, dataValue: any)
@@ -60,6 +65,12 @@ class MainController
     {
         this.socket.send("message", "update", "resetdeck");
         this.hand.length = 0;
+    }
+
+    private bet(currentBet: number)
+    {
+        this.currentBet = currentBet;
+        this.socket.send("message", "bet", currentBet);
     }
 }
 

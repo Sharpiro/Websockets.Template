@@ -10,22 +10,22 @@ namespace Websockets.Template.CoreX.OwinSocketServer
 {
     public class WebSocketServer
     {
-        private readonly WebSocketHandler _socketHandler;
+        private readonly ISocketHandler _socketHandler;
         private readonly ApplicationHandler _applicationHandler;
 
         public WebSocketServer()
         {
-            _applicationHandler = new ApplicationHandler();
             _socketHandler = new WebSocketHandler();
+            _applicationHandler = new ApplicationHandler(_socketHandler);
         }
 
         private void HandleReceivedData(string messageSource, string socketId, int socketNumber)
         {
             if (messageSource.Equals("close"))
             {
-                _socketHandler.RemoveSocket(socketId);
                 var appId = _socketHandler.GetApplicationIdFromSocketId(socketId);
                 _applicationHandler.RemoveSocketFromApplication(socketId, appId);
+                _socketHandler.RemoveSocket(socketId);
                 return;
             }
             if (messageSource.Equals("keep-alive"))
@@ -44,7 +44,7 @@ namespace Websockets.Template.CoreX.OwinSocketServer
                     _socketHandler.BroadcastMessage(messageObject.Data);
                     break;
                 case "message":
-                    _applicationHandler?.HandleMessage(_socketHandler, messageObject);
+                    _applicationHandler?.HandleMessage(messageObject);
                     break;
             }
         }

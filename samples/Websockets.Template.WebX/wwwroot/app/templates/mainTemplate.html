@@ -45,8 +45,7 @@
     <div class="row">
         <div class="col-md-12" style="padding-top: 25px">
             <input type="number" ng-model="vm.currentBet" />
-            <button ng-click="vm.hi(vm.currentBet)" class="btn btn-default">Hi</button>
-            <button ng-click="vm.lo(vm.currentBet)" class="btn btn-default">Lo</button>
+            <button ng-click="vm.bet(vm.currentBet)" class="btn btn-default">Bet</button>
         </div>
     </div>
 
@@ -55,7 +54,7 @@
             <button ng-click="vm.resetDeck()" class="btn btn-default">Reset Deck</button>
         </div>
     </div>
-    <!--<div class="row">
+    <div class="row">
         <div class="col-md-12">
             <table class="table">
                 <tr ng-repeat="card in vm.hand">
@@ -63,5 +62,5 @@
                 </tr>
             </table>
         </div>
-    </div>-->
+    </div>
 </div>

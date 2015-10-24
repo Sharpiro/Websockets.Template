@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Websockets.Template.CoreX.Models;
+using System.Linq;
 using Websockets.Template.CoreX.OwinSocketServer;
 
 namespace Websockets.Template.CoreX.CardApp
@@ -9,20 +8,50 @@ namespace Websockets.Template.CoreX.CardApp
     public abstract class CardApplication : BaseApplication
     {
         private List<Card> _deck;
+        private readonly List<Card> _communityCards;
+        protected int CardsToDeal { get; set; } = 2;
+        private readonly Random _randomizer = new Random();
+        public int Round { get; set; } = 1;
+        public Dictionary<int, int> CardsPerRound;
 
-        protected CardApplication()
+        protected CardApplication(ISocketHandler socketHandler) : base(socketHandler)
         {
+            _communityCards = new List<Card>();
             _deck = CardDefinitions.GetDeck();
         }
 
-        protected void GetCardResponse(WebSocketWrapper socket, DataTransferModel messageObject)
+        protected string AddCardToPlayer(string socketId)
         {
             var card = GetCard();
-            var cardJson = JsonConvert.SerializeObject(card);
-            var playerSocketId = messageObject.SocketId;
-            Players[playerSocketId].Hand.Add(card);
-            socket.SendEncoded(messageObject.SocketId, messageObject.DataTitle, cardJson);
-            //server.SendMessageById(messageObject.SocketId, messageObject.DataTitle, cardJson);
+            var player = Players[socketId];
+            player.Hand.Add(card);
+            return card.ToString();
+        }
+
+        protected string AddCardToCommunity()
+        {
+            var card = GetCard();
+            _communityCards.Add(card);
+            return card.ToString();
+        }
+
+        protected void ClearBets()
+        {
+            foreach (var player in Players)
+            {
+                player.Value.CurrentBet = null;
+            }
+        }
+
+        protected bool AllPlayersHaveBet()
+        {
+            return Players.All(p => p.Value.CurrentBet != null);
+        }
+
+        protected void PlaceBet(string socketId, string data)
+        {
+            var betAmount = int.Parse(data);
+            Players[socketId].CurrentBet = betAmount;
         }
 
         protected void ResetDeck()
@@ -30,11 +59,10 @@ namespace Websockets.Template.CoreX.CardApp
             _deck = CardDefinitions.GetDeck();
         }
 
-        protected Card GetCard()
+        private Card GetCard()
         {
             if (_deck.Count <= 0) return null;
-            var randomizer = new Random();
-            var deckPosition = randomizer.Next(_deck.Count);
+            var deckPosition = _randomizer.Next(_deck.Count);
             var card = _deck[deckPosition];
             _deck.Remove(card);
             return card;

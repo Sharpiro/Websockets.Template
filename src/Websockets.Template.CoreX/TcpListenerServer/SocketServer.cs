@@ -138,6 +138,36 @@ namespace Websockets.Template.CoreX.TcpListenerServer
             return _dictionary.FirstOrDefault(c => c.Value.SocketNumber == playerNumber).Value.ClientId;
         }
 
+        public WebSocketWrapper GetSocketById(string socketId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateWebSocketApplicationId(string socketId, string applicationId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddSocket(WebSocketWrapper newSocket)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveSocket(string oldSocketId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetApplicationIdFromSocketId(string socketId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CloseAllSockets()
+        {
+            throw new NotImplementedException();
+        }
+
         private void SendGuid(string clientId)
         {
             SocketWrapper connection;
