@@ -32,5 +32,13 @@ namespace Websockets.Template.Tests
         {
             CardDefinitions.GetDeck();
         }
+
+        [Fact]
+        public void GetPlayerTest()
+        {
+            var app = new PokerApplication(new SocketServer());
+            var player = app.GetPlayer("12345");
+            Assert.Null(player);
+        }
     }
 }

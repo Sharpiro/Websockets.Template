@@ -8,7 +8,7 @@ namespace Websockets.Template.CoreX.CardApp
     public abstract class CardApplication : BaseApplication
     {
         private List<Card> _deck;
-        private readonly List<Card> _communityCards;
+        //private readonly List<Card> _communityCards;
         protected int CardsToDeal { get; set; } = 2;
         private readonly Random _randomizer = new Random();
         public int Round { get; set; } = 1;
@@ -16,7 +16,7 @@ namespace Websockets.Template.CoreX.CardApp
 
         protected CardApplication(ISocketHandler socketHandler) : base(socketHandler)
         {
-            _communityCards = new List<Card>();
+            //_communityCards = new List<Card>();
             _deck = CardDefinitions.GetDeck();
         }
 
@@ -31,7 +31,10 @@ namespace Websockets.Template.CoreX.CardApp
         protected string AddCardToCommunity()
         {
             var card = GetCard();
-            _communityCards.Add(card);
+            foreach (var player in Players)
+            {
+                player.Value.Hand.Add(card);
+            }
             return card.ToString();
         }
 
@@ -41,6 +44,12 @@ namespace Websockets.Template.CoreX.CardApp
             {
                 player.Value.CurrentBet = null;
             }
+        }
+
+        protected bool HasBet(string socketId)
+        {
+            var player = GetPlayer(socketId);
+            return player != null && player.HasBet();
         }
 
         protected bool AllPlayersHaveBet()
@@ -54,12 +63,12 @@ namespace Websockets.Template.CoreX.CardApp
             Players[socketId].CurrentBet = betAmount;
         }
 
-        protected void ResetDeck()
+        public void ResetDeck()
         {
             _deck = CardDefinitions.GetDeck();
         }
 
-        private Card GetCard()
+        public Card GetCard()
         {
             if (_deck.Count <= 0) return null;
             var deckPosition = _randomizer.Next(_deck.Count);

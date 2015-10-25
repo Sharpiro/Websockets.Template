@@ -21,7 +21,7 @@ namespace Websockets.Template.CoreX.OwinSocketServer
         public string Id { get; set; }
         public int Number { get; set; }
         public string ApplicationId { get; set; }
-        private Stream _stream;
+        private readonly Stream _stream;
 
         public WebSocketWrapper(Stream stream)
         {

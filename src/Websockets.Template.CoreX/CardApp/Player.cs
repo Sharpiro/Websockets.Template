@@ -9,10 +9,16 @@ namespace Websockets.Template.CoreX.CardApp
         public int PlayerNumber { get; set; }
         public List<Card> Hand { get; set; }
         public int? CurrentBet { get; set; }
+        public PokerHand BestHand { get; set; }
 
         public Player()
         {
             Hand = new List<Card>();
+        }
+
+        public bool HasBet()
+        {
+            return CurrentBet != null;
         }
     }
 }

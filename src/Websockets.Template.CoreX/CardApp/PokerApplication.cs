@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,7 +44,8 @@ namespace Websockets.Template.CoreX.CardApp
             switch (messageObject.DataTitle)
             {
                 case "bet":
-                    PlaceBet(messageObject.SocketId, messageObject.Data);
+                    if (!HasBet(messageObject.SocketId))
+                        PlaceBet(messageObject.SocketId, messageObject.Data);
                     if (AllPlayersHaveBet())
                     {
                         ClearBets();
@@ -81,12 +83,22 @@ namespace Websockets.Template.CoreX.CardApp
                     case GameState.DealCards:
                         DealCommunityCards(CardsPerRound[Round]);
                         Round++;
-                        GameState = Round < 4 ? GameState.WaitingForBets : GameState.GameOver;
+                        GameState = Round < 4 ? GameState.WaitingForBets : GameState.CheckWinner;
+                        break;
+                    case GameState.CheckWinner:
+                        CheckWinner();
+                        GameState = GameState.GameOver;
                         break;
                 }
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Delay(TimeSpan.FromSeconds(5));
             }
+        }
+
+        private void CheckWinner()
+        {
+            var winner = PokerHandsHandler.CheckWinner(Players);
+            SocketHandler.SendMessageById(winner.SocketId, "update", "you win");
         }
 
         private void DealPlayerCards(int numberOfCards)
@@ -118,6 +130,6 @@ namespace Websockets.Template.CoreX.CardApp
 
     public enum GameState
     {
-        WaitingForBets, DealCards, GameOver
+        WaitingForBets, DealCards, CheckWinner, GameOver
     }
 }

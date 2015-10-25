@@ -37,6 +37,13 @@ namespace Websockets.Template.CoreX.OwinSocketServer
             Players.TryRemove(socketId, out player);
         }
 
+        public Player GetPlayer(string socketId)
+        {
+            Player player;
+            Players.TryGetValue(socketId, out player);
+            return player;
+        }
+
         public bool IsFull()
         {
             if (Players.Count > MaxPlayers)
