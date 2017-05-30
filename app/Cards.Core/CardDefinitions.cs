@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Cards.Core.CardApp
+namespace Cards.Core
 {
     public static class CardDefinitions
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using Websockets.Core.Models;
 using Websockets.Core.OwinSocketServer;
 
-namespace Cards.Core.CardApp
+namespace Cards.Core
 {
     public abstract class CardApplication : BaseApplication
     {

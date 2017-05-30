@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Cards.Core.CardApp
+namespace Cards.Core
 {
     public class Card
     {

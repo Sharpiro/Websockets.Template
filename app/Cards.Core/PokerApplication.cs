@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Websockets.Core.Models;
 using Websockets.Core.OwinSocketServer;
 
-namespace Cards.Core.CardApp
+namespace Cards.Core
 {
     public sealed class PokerApplication : CardApplication
     {

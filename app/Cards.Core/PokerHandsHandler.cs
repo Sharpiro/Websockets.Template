@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Cards.Core.CardApp
+namespace Cards.Core
 {
     public static class PokerHandsHandler
     {

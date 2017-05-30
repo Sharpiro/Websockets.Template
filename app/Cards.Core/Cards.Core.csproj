@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Websockets.Core\Websockets.Core.csproj" />
-    <ProjectReference Include="..\src\Websockets.Core\Websockets.Core.csproj" />
   </ItemGroup>
 
 </Project>

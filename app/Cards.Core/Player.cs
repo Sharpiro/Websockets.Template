@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Websockets.Core.Models;
 
-namespace Cards.Core.CardApp
+namespace Cards.Core
 {
     public class Player : User
     {
