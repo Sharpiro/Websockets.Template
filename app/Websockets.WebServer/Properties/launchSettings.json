@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Websockets.WebClient": {
+    "Websockets.WebServer": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

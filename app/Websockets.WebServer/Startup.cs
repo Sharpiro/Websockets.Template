@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Websockets.Core.OwinSocketServer;
 
-namespace Websockets.WebClient
+namespace Websockets.WebServer
 {
     public class Startup
     {
