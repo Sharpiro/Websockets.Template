@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>dnx451;dnxcore50</TargetFrameworks>
+    <AssemblyName>Websockets.Template.WebX</AssemblyName>
+    <PackageId>Websockets.Template.WebX</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\**\*;node_modules;bower_components" />
+    <EmbeddedResource Remove="wwwroot\**\*;node_modules;bower_components" />
+    <None Update="node_modules;bower_components;**.xproj;**.user;**.vspscc">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Websockets.Template.CoreX\Websockets.Template.CoreX.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Server.Kestrel" Version="1.0.0-beta8" />
+    <PackageReference Include="Microsoft.AspNet.IISPlatformHandler" Version="1.0.0-beta8" />
+    <PackageReference Include="Microsoft.AspNet.StaticFiles" Version="1.0.0-beta8" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'dnx451' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>
