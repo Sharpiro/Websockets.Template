@@ -23,7 +23,7 @@ namespace Cards.Core
                 {3, 1}
             };
             SocketHandler = socketHandler;
-            MaxPlayers = 2;
+            MaxUsers = 2;
         }
 
         public override void HandleMessage(DataTransferModel messageObject)
@@ -45,7 +45,7 @@ namespace Cards.Core
                 case "bet":
                     if (!HasBet(messageObject.SocketId))
                         PlaceBet(messageObject.SocketId, messageObject.Data);
-                    if (AllPlayersHaveBet())
+                    if (AllUsersHaveBet())
                     {
                         ClearBets();
                         GameState = GameState.DealCards;
@@ -64,7 +64,7 @@ namespace Cards.Core
         public override void Stop()
         {
             _cancellationTokenSource.Cancel();
-            var remainingPlayerId = Players.FirstOrDefault().Value.SocketId;
+            var remainingPlayerId = Users.FirstOrDefault().Value.SocketId;
             SocketHandler.SendMessageById(remainingPlayerId, "reset", "reset");
             IsStarted = false;
             ResetDeck();
@@ -104,7 +104,7 @@ namespace Cards.Core
         {
             for (var i = 0; i < numberOfCards; i++)
             {
-                foreach (var playerEntry in Players)
+                foreach (var playerEntry in Users)
                 {
                     var player = playerEntry.Value;
                     var response = AddCardToPlayer(player.SocketId);
@@ -118,7 +118,7 @@ namespace Cards.Core
             for (var i = 0; i < numberOfCards; i++)
             {
                 var response = AddCardToCommunity();
-                foreach (var playerEntry in Players)
+                foreach (var playerEntry in Users)
                 {
                     var player = playerEntry.Value;
                     SocketHandler.SendMessageById(player.SocketId, "update", response);

@@ -74,7 +74,7 @@ namespace Websockets.Core.OwinSocketServer
         {
             var openApplicationId = GetOpenApplicationId() ?? AddApplication();
             var currentApp = _applications[openApplicationId];
-            currentApp.AddPlayer(messageObject);
+            currentApp.AddUser(messageObject);
             _socketHandler.UpdateWebSocketApplicationId(messageObject.SocketId, currentApp.Id);
             return currentApp.Id;
         }
@@ -109,7 +109,7 @@ namespace Websockets.Core.OwinSocketServer
 
         public void RemoveSocketFromApplication(string socketId, string applicationId)
         {
-            _applications[applicationId].RemovePlayer(socketId);
+            _applications[applicationId].RemoveUser(socketId);
             _applications[applicationId].Stop();
         }
     }

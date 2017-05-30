@@ -10,7 +10,7 @@ namespace Websockets.Core.OwinSocketServer
     {
         private readonly ConcurrentDictionary<string, WebSocketWrapper> _sockets;
         private int _maxSockets = 5;
-        public int MaxSockets { get { return _maxSockets; } set { if (_sockets.Count < 1) _maxSockets = value; } }
+        public int MaxSockets { get => _maxSockets; set { if (_sockets.Count < 1) _maxSockets = value; } }
 
         public WebSocketHandler()
         {

@@ -24,7 +24,7 @@ namespace Cards.Core
         protected string AddCardToPlayer(string socketId)
         {
             var card = GetCard();
-            var player = Players[socketId] as Player;
+            var player = Users[socketId] as Player;
             player.Hand.Add(card);
             return card.ToString();
         }
@@ -32,7 +32,7 @@ namespace Cards.Core
         protected string AddCardToCommunity()
         {
             var card = GetCard();
-            foreach (var player in Players.Select(p => p.Value as Player))
+            foreach (var player in Users.Select(p => p.Value as Player))
             {
                 player.Hand.Add(card);
             }
@@ -41,7 +41,7 @@ namespace Cards.Core
 
         protected void ClearBets()
         {
-            foreach (var player in Players.Select(p => p.Value as Player))
+            foreach (var player in Users.Select(p => p.Value as Player))
             {
                 player.CurrentBet = null;
             }
@@ -49,19 +49,19 @@ namespace Cards.Core
 
         protected bool HasBet(string socketId)
         {
-            var player = GetPlayer(socketId) as Player;
+            var player = GetUser(socketId) as Player;
             return player != null && player.HasBet();
         }
 
-        protected bool AllPlayersHaveBet()
+        protected bool AllUsersHaveBet()
         {
-            return Players.Select(p => p.Value as Player).All(p => p.CurrentBet != null);
+            return Users.Select(p => p.Value as Player).All(p => p.CurrentBet != null);
         }
 
         protected void PlaceBet(string socketId, string data)
         {
             var betAmount = int.Parse(data);
-            var player = Players[socketId] as Player;
+            var player = Users[socketId] as Player;
             player.CurrentBet = betAmount;
         }
 

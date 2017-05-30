@@ -9,50 +9,49 @@ namespace Websockets.Core.OwinSocketServer
         public string Id { get; set; }
         public bool IsStarted { get; set; }
         public bool UpdatingRequest { get; set; }
-        protected readonly ConcurrentDictionary<string, User> Players;
-        protected int MaxPlayers { get; set; } = 2;
+        protected readonly ConcurrentDictionary<string, User> Users;
+        protected int MaxUsers { get; set; } = 2;
         protected ISocketHandler SocketHandler;
 
         protected BaseApplication(ISocketHandler socketHandler)
         {
             SocketHandler = socketHandler;
-            Players = new ConcurrentDictionary<string, User>();
+            Users = new ConcurrentDictionary<string, User>();
         }
 
-        public void AddPlayer(DataTransferModel messageObject)
+        public void AddUser(DataTransferModel messageObject)
         {
-            var newPlayer = new User
+            var newUser = new User
             {
                 SocketId = messageObject.SocketId,
                 SocketNumber = messageObject.SocketNumber,
-                UserNumber = Players.Count + 1
+                UserNumber = Users.Count + 1
             };
-            Players.TryAdd(newPlayer.SocketId, newPlayer);
+            Users.TryAdd(newUser.SocketId, newUser);
         }
 
-        public void RemovePlayer(string socketId)
+        public void RemoveUser(string socketId)
         {
-            User player;
-            Players.TryRemove(socketId, out player);
+            Users.TryRemove(socketId, out User _);
         }
 
-        public User GetPlayer(string socketId)
+        public User GetUser(string socketId)
         {
-            User player;
-            Players.TryGetValue(socketId, out player);
-            return player;
+            User user;
+            Users.TryGetValue(socketId, out user);
+            return user;
         }
 
         public bool IsFull()
         {
-            if (Players.Count > MaxPlayers)
-                throw new Exception("too many players in game this shouldn't happen...");
-            return Players.Count == MaxPlayers;
+            if (Users.Count > MaxUsers)
+                throw new Exception("too many users in app this shouldn't happen...");
+            return Users.Count == MaxUsers;
         }
 
         public bool IsEmpty()
         {
-            return Players.Count == 0;
+            return Users.Count == 0;
         }
 
         public abstract void Start();
