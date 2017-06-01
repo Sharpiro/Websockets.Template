@@ -8,17 +8,18 @@ namespace Websockets.Core.OwinSocketServer
 
         public override void Start()
         {
-            throw new System.NotImplementedException();
+
         }
 
         public override void Stop()
         {
-            throw new System.NotImplementedException();
+
         }
 
         public override void HandleMessage(DataTransferModel m)
         {
-            throw new System.NotImplementedException();
+            SocketHandler.BroadcastMessage(m.SocketId, "chat", m.Data);
+            //SocketHandler.SendMessageById(m.SocketId, "chat", $"peronal message to socket id: '{m.SocketId}'");
         }
     }
 }

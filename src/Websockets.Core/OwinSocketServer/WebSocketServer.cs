@@ -37,23 +37,23 @@ namespace Websockets.Core.OwinSocketServer
             var messageObject = JsonConvert.DeserializeObject<DataTransferModel>(messageSource);
             messageObject.SocketId = socketId;
             messageObject.SocketNumber = socketNumber;
-            switch (messageObject.DataType.ToLowerInvariant())
-            {
-                case "broadcast":
-                    _socketHandler.BroadcastMessage(messageObject.Data);
-                    break;
-                case "message":
-                    _applicationHandler?.HandleMessage(messageObject);
-                    break;
-            }
+            //switch (messageObject.DataType.ToLowerInvariant())
+            //{
+            //    case "broadcast":
+            //        _socketHandler.BroadcastMessage(messageObject.SocketId, "broadcast", messageObject.Data);
+            //        break;
+            //    case "message":
+            //        break;
+            //}
+            _applicationHandler?.HandleMessage(messageObject);
         }
 
         public async Task<string> UpgradeToWebsocket(HttpContext context, IHttpUpgradeFeature upgradeFeature)
         {
             context.Features.Set<IHttpWebSocketFeature>(new UpgradeHandshake(context, upgradeFeature));
             var socket = await context.WebSockets.AcceptWebSocketAsync() as WebSocketWrapper;
-            if (socket == null)
-                throw new NullReferenceException("the socket returned was null!");
+            if (socket == null) throw new NullReferenceException("the socket returned was null!");
+
             _socketHandler.AddSocket(socket);
             return socket.Id;
         }

@@ -1,4 +1,18 @@
-<h1>
-  {{title}}
-</h1>
+<div class="container">
+  <div class=col-12>
+    <table>
+      <tr *ngFor="let messageDto of receivedMessages">
+        <td>{{messageDto.data}}</td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-12" style="padding-top:150px">
+    <form>
+      <!--<textarea [(ngModel)]="textArea" name="textArea" id="" cols="75" rows="15"></textarea>-->
+      <input type="text" name="inputBox" [(ngModel)]="textArea">
+      <button name="submit" (click)="click(textArea)">Send</button>
+    </form>
+  </div>
+</div>
+
 <router-outlet></router-outlet>

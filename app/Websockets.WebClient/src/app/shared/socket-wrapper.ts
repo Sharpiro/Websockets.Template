@@ -16,13 +16,13 @@ export class SocketWrapper {
         this.socket.onopen = () => {
             console.log("connection opened...");
             // this.send("guid", "guid", null);
-            const func = this.registeredFuncs["connect"];
+            const func = this.registeredFuncs["connected"];
             if (func)
                 func();
         };
 
         this.socket.onmessage = (message) => {
-            console.log("message received:");
+            // console.log("message received:");
             let jsonObject: any = undefined;
             try {
                 jsonObject = JSON.parse(message.data);
@@ -32,7 +32,7 @@ export class SocketWrapper {
             }
 
             if (!jsonObject) return;
-            console.log(jsonObject);
+            // console.log(jsonObject);
             const functionName: any = jsonObject.dataTitle;
             const func = this.registeredFuncs[functionName];
             if (func)

@@ -67,11 +67,12 @@ namespace Websockets.Core.OwinSocketServer
             return _sockets[socketId].ApplicationId;
         }
 
-        public void BroadcastMessage(string message)
+        public void BroadcastMessage(string socketId, string title, string message)
         {
+            //foreach (var socket in _sockets.Where(s => s.Value.Id != socketId))
             foreach (var socket in _sockets)
             {
-                socket.Value.SendEncoded("broadcast", "broadcast", message);
+                socket.Value.SendEncoded("broadcast", title, message);
             }
         }
 

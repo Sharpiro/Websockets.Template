@@ -74,7 +74,7 @@ namespace Websockets.Core.OwinSocketServer
         private void TryStartApplication(string applicationId)
         {
             var application = _applications[applicationId];
-            if (application.IsFull() && !application.IsStarted)
+            if (!application.IsFull() && !application.IsStarted)
                 application.Start();
         }
 
