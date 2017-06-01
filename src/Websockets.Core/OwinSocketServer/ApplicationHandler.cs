@@ -10,15 +10,16 @@ namespace Websockets.Core.OwinSocketServer
     {
         private readonly ConcurrentDictionary<string, BaseApplication> _applications;
         private readonly ISocketHandler _socketHandler;
+        private readonly Task _purgeTask;
 
         public ApplicationHandler(ISocketHandler socketHandler)
         {
             _applications = new ConcurrentDictionary<string, BaseApplication>();
             _socketHandler = socketHandler;
-            Purge();
+            _purgeTask = Purge();
         }
 
-        private async void Purge()
+        private async Task Purge()
         {
             while (true)
 
@@ -29,8 +30,7 @@ namespace Websockets.Core.OwinSocketServer
                 {
                     var application = dictionaryItem.Value;
                     if (!application.IsEmpty()) continue;
-                    BaseApplication app;
-                    _applications.TryRemove(application.Id, out app);
+                    _applications.TryRemove(application.Id, out BaseApplication app);
                 }
                 //System.GC.Collect();
                 Debug.WriteLine($"# of Apps: {_applications.Count}");
@@ -39,24 +39,22 @@ namespace Websockets.Core.OwinSocketServer
 
         private string AddApplication()
         {
-            var appId = Guid.NewGuid().ToString();
-            BaseApplication newApp = null;
-            //var newApp = new BaseApplication(_socketHandler)
-            //{
-            //    Id = appId
-            //};
-            _applications.TryAdd(appId, newApp);
+            var appType = typeof(MessagingApplication);
+            var instance = Activator.CreateInstance(appType, _socketHandler) as BaseApplication;
+            if (instance == null) throw new InvalidCastException($"The application provided does not inherit from '{nameof(BaseApplication)}'");
+            instance.Id = Guid.NewGuid().ToString();
+            _applications.TryAdd(instance.Id, instance);
             Debug.WriteLine($"# of Apps: {_applications.Count}");
-            return appId;
+            return instance.Id;
         }
 
         public void HandleMessage(DataTransferModel messageObject)
         {
-            if (messageObject.DataTitle.ToLowerInvariant().Equals("addplayer"))
+            if (messageObject.DataTitle.ToLowerInvariant().Equals("adduser"))
             {
                 var appId = AddSocketToApplication(messageObject);
                 TryStartApplication(appId);
-                _socketHandler.SendMessageById(messageObject.SocketId, "addplayer", "success");
+                _socketHandler.SendMessageById(messageObject.SocketId, "adduser", "success");
             }
             else
             {
@@ -64,12 +62,6 @@ namespace Websockets.Core.OwinSocketServer
             }
         }
 
-        /// <summary>
-        /// Tries to add a socket to an existing application.  If none are found it creates a new one and adds the socket.
-        /// </summary>
-        /// <param name="socketHandler"></param>
-        /// <param name="messageObject"></param>
-        /// <returns>The id of the application that received the socket</returns>
         private string AddSocketToApplication(DataTransferModel messageObject)
         {
             var openApplicationId = GetOpenApplicationId() ?? AddApplication();
@@ -109,8 +101,14 @@ namespace Websockets.Core.OwinSocketServer
 
         public void RemoveSocketFromApplication(string socketId, string applicationId)
         {
-            _applications[applicationId].RemoveUser(socketId);
-            _applications[applicationId].Stop();
+            if (string.IsNullOrEmpty(socketId)) throw new ArgumentNullException(nameof(socketId));
+            if (string.IsNullOrEmpty(applicationId)) return;
+
+            var applicationExists = _applications.TryGetValue(applicationId, out BaseApplication application);
+            if (!applicationExists) return;
+
+            application.RemoveUser(socketId);
+            application.Stop();
         }
     }
 }

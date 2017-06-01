@@ -25,7 +25,7 @@ namespace Websockets.WebServer
 
             app.Map(new PathString("/socket"), builder =>
             {
-                builder.UseOwinSocketServer<BaseApplication>();
+                builder.UseOwinSocketServer();
             });
         }
 

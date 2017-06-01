@@ -13,10 +13,10 @@ namespace Websockets.Core.OwinSocketServer
         private readonly ISocketHandler _socketHandler;
         private readonly ApplicationHandler _applicationHandler;
 
-        public WebSocketServer()
+        public WebSocketServer(ISocketHandler socketHandler, ApplicationHandler applicationHandler)
         {
-            _socketHandler = new WebSocketHandler();
-            _applicationHandler = new ApplicationHandler(_socketHandler);
+            _socketHandler = socketHandler ?? throw new ArgumentNullException(nameof(socketHandler));
+            _applicationHandler = applicationHandler ?? throw new ArgumentNullException(nameof(applicationHandler));
         }
 
         private void HandleReceivedData(string messageSource, string socketId, int socketNumber)
@@ -34,7 +34,6 @@ namespace Websockets.Core.OwinSocketServer
                 return;
             }
             Debug.WriteLine($"Message: {messageSource}");
-            var socket = _socketHandler.GetSocketById(socketId);
             var messageObject = JsonConvert.DeserializeObject<DataTransferModel>(messageSource);
             messageObject.SocketId = socketId;
             messageObject.SocketNumber = socketNumber;
@@ -74,26 +73,6 @@ namespace Websockets.Core.OwinSocketServer
                     Debug.WriteLine("err");
                 }
             }
-        }
-
-        public void Start()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Stop()
-        {
-            _socketHandler.CloseAllSockets();
-        }
-
-        public void UseApp<TApp>() where TApp : BaseApplication
-        {
-            //_application = Activator.CreateInstance<TApp>();
-        }
-
-        public void UseApp(Type appType)
-        {
-            //_application = Activator.CreateInstance(appType) as IWebSocketApplication;
         }
     }
 }

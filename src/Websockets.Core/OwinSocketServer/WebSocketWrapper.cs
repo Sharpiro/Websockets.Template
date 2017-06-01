@@ -25,7 +25,7 @@ namespace Websockets.Core.OwinSocketServer
 
         public WebSocketWrapper(Stream stream)
         {
-            _stream = stream;
+            _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         }
 
         public Task<string> Receive()
@@ -56,7 +56,7 @@ namespace Websockets.Core.OwinSocketServer
                 return Task.FromResult(plainText);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Debug.WriteLine("Socket error");
             }
@@ -128,7 +128,7 @@ namespace Websockets.Core.OwinSocketServer
                 throw new InvalidOperationException("Data is too long, not supported yet...");
             var decoded = new byte[dataLength - 6];
             var encoded = data.Skip(6).Take(decoded.Length).ToArray();
-            var key = new byte[4] { data[2], data[3], data[4], data[5] };
+            var key = new[] { data[2], data[3], data[4], data[5] };
             for (var i = 0; i < encoded.Length; i++)
             {
                 decoded[i] = (byte)(encoded[i] ^ key[i % 4]);
@@ -137,7 +137,7 @@ namespace Websockets.Core.OwinSocketServer
             return decodedMessage;
         }
 
-        private string Encode(string data)
+        private static string Encode(string data)
         {
             var bytes = Encoding.UTF8.GetBytes(data).ToList();
             var length = bytes.Count;

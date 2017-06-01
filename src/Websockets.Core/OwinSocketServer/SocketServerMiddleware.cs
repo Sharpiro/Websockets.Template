@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -13,14 +12,9 @@ namespace Websockets.Core.OwinSocketServer
         public SocketServerMiddleware(RequestDelegate next)
         {
             _next = next;
-            _server = new WebSocketServer();
-        }
-
-        public SocketServerMiddleware(RequestDelegate next, Type appType)
-        {
-            _next = next;
-            _server = new WebSocketServer();
-            _server.UseApp(appType);
+            var socketHandler = new WebSocketHandler();
+            var applicationHandler = new ApplicationHandler(socketHandler);
+            _server = new WebSocketServer(socketHandler, applicationHandler);
         }
 
         public async Task Invoke(HttpContext context)

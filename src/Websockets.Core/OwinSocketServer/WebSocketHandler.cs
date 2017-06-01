@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -29,14 +30,21 @@ namespace Websockets.Core.OwinSocketServer
 
         public void RemoveSocket(string oldSocketId)
         {
-            WebSocketWrapper socket;
-            _sockets.TryRemove(oldSocketId, out socket);
+            if (string.IsNullOrEmpty(oldSocketId)) throw new ArgumentNullException(nameof(oldSocketId));
+
+            var success = _sockets.TryRemove(oldSocketId, out WebSocketWrapper socket);
+            if (!success) return;
             socket.Close();
         }
 
         public WebSocketWrapper GetSocketById(string socketId)
         {
-            return _sockets[socketId];
+            if (string.IsNullOrEmpty(socketId)) throw new ArgumentNullException(nameof(socketId));
+
+            var success = _sockets.TryGetValue(socketId, out WebSocketWrapper socket);
+            if (!success) throw new KeyNotFoundException($"Unable to find socket with id: '{socketId}'");
+
+            return socket;
         }
 
         public string GetSocketId(int socketNumber)

@@ -8,10 +8,5 @@ namespace Websockets.Core.OwinSocketServer
         {
             return builder.UseMiddleware<SocketServerMiddleware>();
         }
-
-        public static IApplicationBuilder UseOwinSocketServer<TApp>(this IApplicationBuilder builder) where TApp : BaseApplication
-        {
-            return builder.UseMiddleware<SocketServerMiddleware>(typeof(TApp));
-        }
     }
 }
