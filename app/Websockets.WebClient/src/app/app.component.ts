@@ -7,15 +7,15 @@ import { SocketWrapper } from "app/shared/socket-wrapper";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  private socket: SocketWrapper;
-
+  public socket: SocketWrapper;
   public receivedMessages: any[] = [];
-
-  public title = 'app works!';
+  public allUsersCount = 0;
+  public appUsersCount = 0;
 
   public ngOnInit(): void {
     this.socket = new SocketWrapper();
     this.initalizeSocketMessages();
+    this.socket.connect();
   }
 
   public click(message: string): void {
@@ -31,6 +31,14 @@ export class AppComponent implements OnInit {
       this.receivedMessages.push(data);
       if (this.receivedMessages.length > 5)
         this.receivedMessages.splice(0, 1);
+    });
+
+    this.socket.on("allUsersCount", (data: any) => {
+      this.allUsersCount = data.data;
+    });
+
+    this.socket.on("appUsersCount", (data: any) => {
+      this.appUsersCount = data.data;
     });
   }
 }

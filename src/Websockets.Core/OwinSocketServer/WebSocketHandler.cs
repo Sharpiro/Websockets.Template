@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,7 @@ namespace Websockets.Core.OwinSocketServer
         private readonly ConcurrentDictionary<string, WebSocketWrapper> _sockets;
         private int _maxSockets = 5;
         public int MaxSockets { get => _maxSockets; set { if (_sockets.Count < 1) _maxSockets = value; } }
+        public int Count => _sockets.Count;
 
         public WebSocketHandler()
         {
@@ -28,13 +30,14 @@ namespace Websockets.Core.OwinSocketServer
             Debug.WriteLine($"# of Sockets: {_sockets.Count}");
         }
 
-        public void RemoveSocket(string oldSocketId)
+        public WebSocketWrapper RemoveSocket(string oldSocketId)
         {
             if (string.IsNullOrEmpty(oldSocketId)) throw new ArgumentNullException(nameof(oldSocketId));
 
             var success = _sockets.TryRemove(oldSocketId, out WebSocketWrapper socket);
-            if (!success) return;
+            if (!success) return null;
             socket.Close();
+            return socket;
         }
 
         public WebSocketWrapper GetSocketById(string socketId)
@@ -67,12 +70,22 @@ namespace Websockets.Core.OwinSocketServer
             return _sockets[socketId].ApplicationId;
         }
 
-        public void BroadcastMessage(string socketId, string title, string message)
+        public void BroadcastMessage(string socketId, string title, object message)
         {
-            //foreach (var socket in _sockets.Where(s => s.Value.Id != socketId))
+            var messageJson = JsonConvert.SerializeObject(message);
             foreach (var socket in _sockets)
             {
-                socket.Value.SendEncoded("broadcast", title, message);
+                socket.Value.SendEncoded("broadcast", title, messageJson);
+            }
+        }
+
+        public void BroadcastMessageToApp(string socketId, string appId, string title, object message)
+        {
+            var appSockets = _sockets.Where(s => s.Value.ApplicationId == appId);
+            var messageJson = JsonConvert.SerializeObject(message);
+            foreach (var socket in appSockets)
+            {
+                socket.Value.SendEncoded("broadcast", title, messageJson);
             }
         }
 

@@ -19,26 +19,25 @@ namespace Websockets.Core.OwinSocketServer
             Users = new ConcurrentDictionary<string, User>();
         }
 
-        public void AddUser(DataTransferModel messageObject)
+        public virtual void AddUser(WebSocketWrapper webSocket)
         {
             var newUser = new User
             {
-                SocketId = messageObject.SocketId,
-                SocketNumber = messageObject.SocketNumber,
+                SocketId = webSocket.Id,
+                SocketNumber = webSocket.Number,
                 UserNumber = Users.Count + 1
             };
             Users.TryAdd(newUser.SocketId, newUser);
         }
 
-        public void RemoveUser(string socketId)
+        public virtual void RemoveUser(WebSocketWrapper webSocket)
         {
-            Users.TryRemove(socketId, out User _);
+            Users.TryRemove(webSocket.Id, out User _);
         }
 
         public User GetUser(string socketId)
         {
-            User user;
-            Users.TryGetValue(socketId, out user);
+            Users.TryGetValue(socketId, out User user);
             return user;
         }
 
@@ -49,10 +48,7 @@ namespace Websockets.Core.OwinSocketServer
             return Users.Count == MaxUsers;
         }
 
-        public bool IsEmpty()
-        {
-            return Users.Count == 0;
-        }
+        public bool IsEmpty() => Users.Count == 0;
 
         public abstract void Start();
         public abstract void Stop();

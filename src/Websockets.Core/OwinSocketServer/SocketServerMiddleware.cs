@@ -24,7 +24,6 @@ namespace Websockets.Core.OwinSocketServer
             {
                 var socketId = await _server.UpgradeToWebsocket(context, upgradeFeature);
                 await _server.ListenOnSocket(socketId);
-
             }
             await _next(context);
         }

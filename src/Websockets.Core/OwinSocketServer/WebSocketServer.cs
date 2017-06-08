@@ -24,8 +24,8 @@ namespace Websockets.Core.OwinSocketServer
             if (messageSource.Equals("close"))
             {
                 var appId = _socketHandler.GetApplicationIdFromSocketId(socketId);
-                _applicationHandler.RemoveSocketFromApplication(socketId, appId);
-                _socketHandler.RemoveSocket(socketId);
+                var socket = _socketHandler.RemoveSocket(socketId);
+                _applicationHandler.RemoveSocketFromApplication(socket);
                 return;
             }
             if (messageSource.Equals("keep-alive"))
@@ -37,14 +37,7 @@ namespace Websockets.Core.OwinSocketServer
             var messageObject = JsonConvert.DeserializeObject<DataTransferModel>(messageSource);
             messageObject.SocketId = socketId;
             messageObject.SocketNumber = socketNumber;
-            //switch (messageObject.DataType.ToLowerInvariant())
-            //{
-            //    case "broadcast":
-            //        _socketHandler.BroadcastMessage(messageObject.SocketId, "broadcast", messageObject.Data);
-            //        break;
-            //    case "message":
-            //        break;
-            //}
+
             _applicationHandler?.HandleMessage(messageObject);
         }
 

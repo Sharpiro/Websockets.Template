@@ -1,19 +1,28 @@
 export class SocketWrapper {
     private socket: WebSocket;
-    private guid: string;
+    private _id: string;
+    private _applicationId: string;
     private registeredFuncs: any = {};
 
+    public get id() {
+        return this._id;
+    }
+
+    public get applicationId() {
+        return this._applicationId;
+    }
+
     constructor() {
+
+    }
+
+    public connect(): void {
         // const baseUrl = window.location.href.split("/")[2];
         const baseUrl = "localhost:55024";
         const socketUrl = `ws://${baseUrl}/socket`;
         this.socket = new WebSocket(socketUrl);
 
-        this.on("guid", (data: any) => {
-            this.guid = data;
-        });
-
-        this.socket.onopen = () => {
+        this.socket.onopen = (data: any) => {
             console.log("connection opened...");
             // this.send("guid", "guid", null);
             const func = this.registeredFuncs["connected"];
@@ -22,16 +31,12 @@ export class SocketWrapper {
         };
 
         this.socket.onmessage = (message) => {
-            // console.log("message received:");
-            let jsonObject: any = undefined;
-            try {
-                jsonObject = JSON.parse(message.data);
-
-            } catch (ex) {
-
-            }
-
+            const jsonObject = JSON.parse(message.data);
             if (!jsonObject) return;
+            if (!this.id || !this.applicationId) {
+                this._id = jsonObject.socketId;
+                this._applicationId = jsonObject.applicationId;
+            }
             // console.log(jsonObject);
             const functionName: any = jsonObject.dataTitle;
             const func = this.registeredFuncs[functionName];
@@ -43,8 +48,8 @@ export class SocketWrapper {
             console.log("connection closed...");
         };
     }
+
     public on(name: string, func: Function) {
-        name = name.toLowerCase();
         this.registeredFuncs[name] = func;
     }
 
@@ -56,9 +61,5 @@ export class SocketWrapper {
 
     public close() {
         this.socket.close();
-    }
-
-    public getGuid() {
-        return this.guid;
     }
 }

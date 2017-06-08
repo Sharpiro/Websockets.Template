@@ -66,8 +66,9 @@ namespace Websockets.Core.OwinSocketServer
         {
             var openApplicationId = GetOpenApplicationId() ?? AddApplication();
             var currentApp = _applications[openApplicationId];
-            currentApp.AddUser(messageObject);
-            _socketHandler.UpdateWebSocketApplicationId(messageObject.SocketId, currentApp.Id);
+            var socket = _socketHandler.GetSocketById(messageObject.SocketId);
+            socket.ApplicationId = currentApp.Id;
+            currentApp.AddUser(socket);
             return currentApp.Id;
         }
 
@@ -99,15 +100,13 @@ namespace Websockets.Core.OwinSocketServer
             _applications[currentAppId].HandleMessage(messageObject);
         }
 
-        public void RemoveSocketFromApplication(string socketId, string applicationId)
+        public void RemoveSocketFromApplication(WebSocketWrapper socket)
         {
-            if (string.IsNullOrEmpty(socketId)) throw new ArgumentNullException(nameof(socketId));
-            if (string.IsNullOrEmpty(applicationId)) return;
 
-            var applicationExists = _applications.TryGetValue(applicationId, out BaseApplication application);
+            var applicationExists = _applications.TryGetValue(socket.ApplicationId, out BaseApplication application);
             if (!applicationExists) return;
 
-            application.RemoveUser(socketId);
+            application.RemoveUser(socket);
             application.Stop();
         }
     }
