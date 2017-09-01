@@ -5,27 +5,11 @@
     <meta charset="utf-8" />
     <link href="lib/bootstrap/bootstrap.min.css" rel="stylesheet" />
 </head>
-<body>
-    <div class="container" style="padding-top:25px">
-        <div class="row">
-            <div class="col-md-4">
-                <span>dataType</span>
-                <select id="dataType" class="form-control">
-                    <option value="message">message</option>
-                    <option value="broadcast">broadcast</option>
-                    <option value="guid">guid</option>
-                </select>
-                <span>dataTitle</span>
-                <input id="dataTitle" type="text" class="form-control" value="getcard"/>
-                <span>dataValue</span>
-                <input id="dataValue" type="text" class="form-control" value="something"/>
-                <span>Output</span>
-                <input id="output" type="text" readonly class="form-control"/>
-                <button id="button1" class="btn btn-default">Submit</button>
-            </div>
-        </div>
-    </div>
+<body data-ng-app="app">
+    <div ui-view></div>
     <script src="lib/jquery/jquery-2.1.4.min.js"></script>
+    <script src="lib/angular/angular.min.js"></script>
+    <script src="lib/angular/angular-ui-router.min.js"></script>
     <script src="lib/bootstrap/bootstrap.min.js"></script>
     <script src="app/appCombined.js"></script>
 </body>

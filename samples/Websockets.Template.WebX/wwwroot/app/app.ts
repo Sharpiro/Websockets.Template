@@ -1,26 +1,26 @@
-﻿///<reference path="../lib/definitions/jquery/jquery.d.ts/"/>
-///<reference path="./socketWrapper.ts"/>
+﻿/// <reference path="../lib/definitions/angularjs/angular.d.ts" />
 
-var socketWrapper = new SocketWrapper();
-socketWrapper.on("ABCD", () =>
-{
-    console.log("ok");
-});
-socketWrapper.on("action1", () =>
-{
-    console.log(`on "clicked" event hit`);
-});
+let app = angular.module("app", ["ui.router"]);
 
-socketWrapper.on("connect", () =>
+app.config(["$stateProvider", "$urlRouterProvider", ($stateProvider: any, $urlRouterProvider: any) =>
 {
-    console.log("game on");
-    socketWrapper.send("message", "addplayer", "");
-});
+    $urlRouterProvider.otherwise("/main");
 
-$("#button1").click(() =>
+    $stateProvider
+        .state("main", {
+            url: "/main",
+            templateUrl: "app/templates/mainTemplate.html",
+            controller: "mainController"
+        });
+}]);
+
+
+interface IDataTransferObject
 {
-    var dataType = $("#dataType").val();
-    var dataTitle = $("#dataTitle").val();
-    var dataValue = $("#dataValue").val();
-    socketWrapper.send(dataType, dataTitle, dataValue);
-});
+    dataType: string;
+    dataTitle: string;
+    data: string;
+    applicationId: string;
+    socketId: string;
+    socketNumber: number;
+}

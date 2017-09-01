@@ -1,14 +1,25 @@
+/// <reference path="../lib/definitions/angularjs/angular.d.ts" />
+var app = angular.module("app", ["ui.router"]);
+app.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, $urlRouterProvider) {
+        $urlRouterProvider.otherwise("/main");
+        $stateProvider
+            .state("main", {
+            url: "/main",
+            templateUrl: "app/templates/mainTemplate.html",
+            controller: "mainController"
+        });
+    }]);
 var SocketWrapper = (function () {
     function SocketWrapper() {
         var _this = this;
         this.registeredFuncs = {};
-        this.socket = new WebSocket("ws://localhost:8095");
+        var hostUrl = window.location.href.split("/")[2];
+        this.socket = new WebSocket("ws://" + hostUrl + "/socket");
         this.on("guid", function (data) {
             _this.guid = data;
         });
         this.socket.onopen = function () {
             console.log("connection opened...");
-            _this.send("guid", "guid", null);
             var func = _this.registeredFuncs["connect"];
             if (func)
                 func();
@@ -27,7 +38,7 @@ var SocketWrapper = (function () {
             var functionName = jsonObject.dataTitle;
             var func = _this.registeredFuncs[functionName];
             if (func)
-                func(jsonObject.data);
+                func(jsonObject);
         };
         this.socket.onclose = function () {
             console.log("connection closed...");
@@ -50,23 +61,58 @@ var SocketWrapper = (function () {
     };
     return SocketWrapper;
 })();
-///<reference path="../lib/definitions/jquery/jquery.d.ts/"/>
-///<reference path="./socketWrapper.ts"/>
-var socketWrapper = new SocketWrapper();
-socketWrapper.on("ABCD", function () {
-    console.log("ok");
-});
-socketWrapper.on("action1", function () {
-    console.log("on \"clicked\" event hit");
-});
-socketWrapper.on("connect", function () {
-    console.log("game on");
-    socketWrapper.send("message", "addplayer", "");
-});
-$("#button1").click(function () {
-    var dataType = $("#dataType").val();
-    var dataTitle = $("#dataTitle").val();
-    var dataValue = $("#dataValue").val();
-    socketWrapper.send(dataType, dataTitle, dataValue);
-});
+/// <reference path="../../lib/definitions/angularjs/angular.d.ts" />
+var MainController = (function () {
+    function MainController(scope, $http) {
+        this.scope = scope;
+        this.$http = $http;
+        this.hand = [];
+        this.money = 500;
+        this.currentBet = 50;
+        scope.dataType = "message";
+        scope.dataTitle = "update";
+        scope.dataValue = "getcard";
+        scope.vm = this;
+        this.socket = new SocketWrapper();
+        this.initalizeSocketMessages();
+    }
+    MainController.prototype.initalizeSocketMessages = function () {
+        var _this = this;
+        this.socket.on("connect", function (data) {
+            _this.socket.send("message", "addplayer", "");
+        });
+        this.socket.on("addplayer", function (data) {
+            _this.socketId = data.socketId;
+            _this.applicationId = data.applicationId;
+            _this.scope.$apply();
+            console.log("game joined");
+        });
+        this.socket.on("gamestarted", function (data) {
+        });
+        this.socket.on("update", function (data) {
+            var card = JSON.parse(data.data);
+            if (card)
+                _this.hand.push(card);
+            _this.scope.$apply();
+        });
+        this.socket.on("reset", function () {
+            _this.hand.length = 0;
+            _this.scope.$apply();
+        });
+    };
+    MainController.prototype.submitButtonClick = function (dataType, dataTitle, dataValue) {
+        this.socket.send(dataType, dataTitle, dataValue);
+        console.log("sending...");
+    };
+    MainController.prototype.resetDeck = function () {
+        this.socket.send("message", "update", "resetdeck");
+        this.hand.length = 0;
+    };
+    MainController.prototype.bet = function (currentBet) {
+        this.currentBet = currentBet;
+        this.socket.send("message", "bet", currentBet);
+    };
+    return MainController;
+})();
+app.controller("mainController", ["$scope", "$http", MainController]);
 //# sourceMappingURL=appCombined.js.map

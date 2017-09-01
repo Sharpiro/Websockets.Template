@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Http;
 using Microsoft.Framework.DependencyInjection;
 using Websockets.Template.CoreX;
 using Websockets.Template.CoreX.CardApp;
+using Websockets.Template.CoreX.OwinSocketServer;
 
 namespace Websockets.Template.WebX
 {
@@ -15,10 +19,15 @@ namespace Websockets.Template.WebX
 
         public void Configure(IApplicationBuilder app)
         {
+
+            //app.UseIISPlatformHandler();
+            app.Map(new PathString("/socket"), builder =>
+            {
+                builder.UseOwinSocketServer<PokerApplication>();
+
+            });
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            var application = new CardApplication(new SocketServer());
-            application.Start();
         }
     }
 }

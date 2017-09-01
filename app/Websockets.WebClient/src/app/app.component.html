@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="row">
+    <h3>Socket Id: {{socket.id}}</h3>
+    <h3>App Id: {{socket.applicationId}}</h3>
+    <h3>All Users: {{allUsersCount}}</h3>
+    <h3>App Users: {{appUsersCount}}</h3>
+  </div>
+  <div class="row">
+    <div class=col-12>
+      <table>
+        <tr *ngFor="let messageDto of receivedMessages">
+          <td>{{messageDto.data}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <form>
+        <!--<textarea [(ngModel)]="textArea" name="textArea" id="" cols="75" rows="15"></textarea>-->
+        <input type="text" name="inputBox" [(ngModel)]="textArea">
+        <button name="submit" (click)="click(textArea)">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<router-outlet></router-outlet>
